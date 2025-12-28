@@ -1,0 +1,13 @@
+.button{
+    padding: 8px 16px;
+    border-radius: 6px;
+    border: 1px solid currentColor;
+    color: var(--btn-text);
+    background: 'transparent';
+    cursor: 'pointer';
+}
+[data-theme="light"] .button{
+    border-color: var(--border-color);
+    color: var(--btn-bg);
+    background-color: transparent;
+}

@@ -1,0 +1,219 @@
+.container{
+    min-height: 120vh;
+    padding: 40px 20px;
+    background-color: var(--bg-page);
+    color: var(--text-primary);
+    display: flex;
+    justify-content: center;
+}
+.wrapper{
+    width: 100%;
+    max-width: 900px;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.title{
+    font-size: 2rem;
+    font-weight: 800;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 20px;
+}
+
+.profileCard{
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 30px;
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    flex-wrap: wrap;
+}
+
+.avatarWrapper{
+    position: relative;
+    width: 120px;
+    height: 120px;
+    cursor: pointer;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid var(--border-color);
+    transition: border-color 0.3s;
+}
+
+.avatarWrapper:hover{
+    border-color: var(--brand-neon);
+    .editOverlay{
+        opacity: 1;
+    }
+}
+
+.avatar{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.hiddenInput{
+    display: none;
+}
+
+.editOverlay{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    background: rgba(0, 0, 0, 0.3);
+}
+
+.iconCamera{
+    color: white;
+    font-size: 1.5rem;
+}
+
+.userInfo {
+    h2{
+        font-size: 1.8rem;
+        margin: 0;
+        color: var(--text-primary);
+    }
+    p{
+        color: var(--text-secondary);
+        margin-top: 5px;
+    }
+}
+
+.nameWrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 5px;
+}
+
+.adminBadge {
+    background-color: var(--brand-neon);
+    color: white;
+    font-size: 1rem;
+    font-weight: bold;
+    padding: 2px 8px;
+    border-radius: 4px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.planBadge {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 12px;
+    margin-bottom: 8px; 
+    color: #fff;
+    text-transform: capitalize;
+}
+
+.basic {
+    background-color: #1e90ff; 
+    box-shadow: 0 0 10px rgba(30, 144, 255, 0.4);
+}
+
+.plus {
+    background-color: #ffa502; 
+    background-image: linear-gradient(45deg, #ffa502, #ff7f50);
+    box-shadow: 0 0 10px rgba(255, 165, 2, 0.5);
+}
+
+.free {
+    background-color: #747d8c;
+}
+
+/*-- seçao 2: GRID obs: colocar Retangulo englobando cada um*/
+.gridSection{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+}
+
+.card{
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 23px;
+}
+
+.cardHeader{
+    margin-bottom: 20px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--brand-neon);
+    display: flex;
+    align-items: center;
+    gap:10px;
+}
+
+.formGroup{
+    margin-bottom: 20px;
+}
+
+.label{
+    display: block;
+    font-size: 1rem;
+    color: var(--text-secondary);
+    margin-bottom: 5px;
+}
+
+.input {
+  width: 100%;
+  padding: 12px;
+  background-color: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  color: var(--text-primary);
+  outline: none;
+  transition: all 0.3s;
+}
+
+.input:focus {
+  border-color: var(--brand-neon);
+}
+
+.btnAction {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--brand-neon);
+  color: var(--brand-neon);
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.btnAction:hover {
+  background-color: var(--brand-neon);
+  color: #000;
+}
+
+.message {
+  padding: 10px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  font-size: 0.9rem;
+}
+.error {
+    background: rgba(255, 68, 68, 0.1);
+    color: #ff4444;
+    border: 1px solid #ff4444;
+}
+
+.success { 
+    background: rgba(28, 231, 131, 0.1);
+    color: var(--brand-neon); 
+    border: 1px solid var(--brand-neon); 
+}

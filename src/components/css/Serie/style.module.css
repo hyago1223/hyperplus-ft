@@ -1,0 +1,106 @@
+.fullPageCenter {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.serieContainer {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 2rem;
+}
+
+.serieImageWrapper {
+  width: 100%;
+}
+.serieImageWrapper img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  border-radius: 8px; /* Adicionado para um visual melhor */
+}
+
+.serieDetails {
+  width: 100%;
+}
+
+.buttonsContainer {
+  margin-top: 1rem;
+  display: flex;
+  gap: 1rem; /* Substitui 'space-x-4' */
+}
+
+.episodesContainer {
+  margin-top: 2rem;
+  padding: 2rem;
+}
+
+/* --- Classes de Tipografia --- */
+.serieTitle {
+  font-size: 2.25rem; /* text-4xl */
+  font-weight: 700; /* font-bold */
+  color: var(--text-primary);
+}
+
+.serieGenre {
+  font-size: 1.25rem; /* text-xl */
+  color: var(--text-secondary); /* Mapeado de 'text-gray-400' */
+}
+
+.serieYear {
+  font-size: 1.125rem; /* text-lg */
+  color: var(--text-secondary); /* Mapeado de 'text-gray-500' */
+}
+
+.serieDescription {
+  margin-top: 1rem;
+  color: var(--text-primary);
+  line-height: 1.6;
+}
+
+.episodesTitle {
+  font-size: 1.5rem; /* text-2xl */
+  font-weight: 700; /* font-bold */
+  margin-bottom: 1rem; /* mb-4 */
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0.5rem;
+}
+
+/* --- Classes de Componentes (Lista de Episódios) --- */
+.episodeList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem; /* Substitui 'space-y-2' */
+}
+
+.episodeCard {
+  padding: 1rem;
+  background-color: var(--bg-surface); /* Mapeado de 'bg-gray-800' */
+  border-radius: 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid var(--border-color);
+  transition: background-color 0.2s;
+}
+.episodeCard:hover {
+  background-color: var(--border-color);
+}
+
+.episodeWatchButton {
+  /* Estilo customizado para o botão de assistir episódio */
+  background: transparent;
+  color: var(--brand-neon);
+  font-size: 0.875rem; /* text-sm */
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+}
+.episodeWatchButton:hover {
+  background: rgba(28, 231, 131, 0.1); /* Efeito de hover neon */
+}
+
+/* --- Classes de Estado --- */
+.errorMessage {
+  color: #e53e3e; /* Vermelho para erros, pois não estava no global */
+}

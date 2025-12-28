@@ -1,0 +1,196 @@
+.container {
+    background-color: var(--bg-page); /* Fundo escuro principal */
+    color: var(--text-primary);
+    min-height: 100vh;
+    padding: 50px 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.stepContainer {
+    max-width: 900px;
+    width: 100%;
+    text-align: center;
+}
+
+.title {
+    font-size: 2rem;
+    margin-bottom: 10px;
+    color: var(--text-primary);
+}
+
+.subtitle {
+    margin-bottom: 40px;
+    color: var(--text-secondary); /* Cinza azulado */
+}
+
+/* --- GRID DOS PLANOS --- */
+.plansGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.planCard {
+    background-color: var(--bg-surface); /* Cartão em tom levemente mais claro que o fundo */
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+}
+
+.planCard:hover {
+    transform: translateY(-5px);
+    /* Sombra verde neon suave ao passar o mouse */
+    box-shadow: 0 10px 20px rgba(28, 231, 131, 0.15); 
+    border-color: var(--brand-neon); 
+}
+
+/* Header do Cartão */
+.cardHeader h3 {
+    color: var(--brand-neon); /* Título do plano em Neon */
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.price {
+    font-size: 1.8rem;
+    font-weight: bold;
+    display: block;
+    margin-bottom: 20px;
+    color: var(--text-primary);
+}
+
+/* Lista de Recursos */
+.features {
+    list-style: none;
+    padding: 0;
+    text-align: left;
+    margin-bottom: 20px;
+    border-top: 1px solid var(--border-color);
+    padding-top: 20px;
+}
+
+.features li {
+    border-bottom: 1px solid var(--border-color);
+    padding: 12px 0;
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    display: flex;
+    justify-content: space-between;
+}
+
+.features li strong {
+    color: var(--text-primary);
+}
+
+/* Botão de Selecionar */
+.selectButton {
+    background-color: transparent;
+    color: var(--brand-neon);
+    border: 2px solid var(--brand-neon); /* Botão outline para não pesar */
+    padding: 15px;
+    width: 100%;
+    border-radius: 4px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.selectButton:hover {
+    background-color: var(--brand-neon);
+    color: var(--btn-text); /* Texto escuro para contraste no neon */
+    box-shadow: 0 0 15px var(--brand-neon); /* Efeito de brilho neon */
+}
+
+/* --- PASSO 2: FORMULÁRIO --- */
+.formHeader {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    margin-bottom: 30px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 20px;
+}
+
+.backButton {
+    background: none;
+    border: none;
+    font-size: 1rem;
+    cursor: pointer;
+    color: var(--text-secondary);
+    font-weight: bold;
+    padding: 0;
+}
+
+.backButton:hover {
+    color: var(--brand-neon);
+}
+
+.stepLabel {
+    font-size: 0.8rem;
+    color: var(--brand-neon);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 5px;
+    display: block;
+}
+
+.form {
+    max-width: 400px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.inputGroup input {
+    width: 100%;
+    padding: 15px;
+    background-color: var(--bg-surface); /* Fundo do input */
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+.inputGroup input:focus {
+    border-color: var(--brand-neon);
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(28, 231, 131, 0.2);
+}
+
+.submitButton {
+    background-color: var(--brand-neon);
+    color: var(--btn-text); /* #022C22 conforme sua paleta */
+    border: none;
+    padding: 15px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background-color 0.3s;
+}
+
+.submitButton:hover {
+    background-color: var(--btn-bg-hover);
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .plansGrid {
+        grid-template-columns: 1fr;
+    }
+    
+    .container {
+        padding: 20px;
+    }
+}

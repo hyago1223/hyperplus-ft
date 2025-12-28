@@ -1,0 +1,28 @@
+.rowContainer {
+    /* overflow-x: scroll; <- Remova isso do container pai, deixe só na lista */
+    overflow-y: hidden;
+    white-space: nowrap;
+}
+
+.rowTitle {
+    font-size: 1.5rem;
+    margin-left: 20px;
+    margin-bottom: 10px;
+    color: var(--text-primary); 
+}
+[data-theme="light"] .rowTitle{
+    color: var(--text-primary)
+}
+
+.rowPosters {
+    display: flex;
+    overflow-y: hidden;
+    overflow-x: scroll; 
+    padding: 20px;
+    scroll-behavior: smooth;  
+    scrollbar-width: none; 
+}
+
+.rowPosters::-webkit-scrollbar {
+    display: none;
+}

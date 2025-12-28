@@ -1,0 +1,39 @@
+.card {
+    position: relative;
+    min-width: 200px; 
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.card:hover {
+    transform: scale(1.05); 
+    z-index: 10;
+}
+
+.rowPoster {
+    width: 100%;
+    object-fit: contain;
+    max-height: 100px;
+    transition: transform 450ms;
+    margin-right: 10px;
+    border-radius: 4px;
+}
+
+
+.rowPosterLarge {
+    max-height: 250px;
+}
+
+.rowPoster:hover {
+    transform: scale(1.08);
+}
+
+.overlay {
+    display: none; 
+    position: absolute;
+    bottom: 0;
+}
+
+.card:hover .overlay {
+    display: flex;
+}

@@ -1,0 +1,25 @@
+.arrowsContainer {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  position: absolute; /* Ajuste se quiser as setas sobre o conteúdo */
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  pointer-events: none; /* Permite clicar no conteúdo por padrão */
+}
+
+.arrowButton {
+  background: rgba(0, 0, 0, 0.5); 
+  color: white;
+  border: none;
+  border-radius: 50%; 
+  padding: 10px;
+  cursor: pointer;
+  transition: background 0.3s;
+  pointer-events: auto; 
+}
+
+.arrowButton:hover {
+  background: rgba(0, 0, 0, 0.8);
+}
