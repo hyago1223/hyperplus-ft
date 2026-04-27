@@ -15,7 +15,6 @@ export default function Header() {
     useEffect(() => {
         async function loadUserData() {
             const token = await getCookie('token');
-            
             if (token) {
                 setIsLoggedIn(true);
                 await fetchUserImage(token);

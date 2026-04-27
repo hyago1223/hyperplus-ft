@@ -64,7 +64,6 @@ button:hover {
   background: var(--btn-bg-hover);
 }
 
-/* INPUTS */
 input, textarea {
   border: 1px solid var(--border-color);
   padding: 8px;

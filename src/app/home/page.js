@@ -79,11 +79,11 @@ export default function Home() {
                             fetchUrl={`${menu.Server_api}/serie/home/recommended`}
                             handlers={Handler}
                         />
-                    <SeriesRow 
-                        title="Minha Lista"
-                        fetchUrl={`${menu.Server_api}/serie/home/watchlist`}
-                        handlers={Handler}
-                    />
+                        <SeriesRow 
+                            title="Minha Lista"
+                            fetchUrl={`${menu.Server_api}/serie/home/watchlist`}
+                            handlers={Handler}
+                        />
                     </div>
                 )}
                 <SeriesRow 
@@ -96,7 +96,7 @@ export default function Home() {
                     title="Top 10 no Brasil Hoje"
                     fetchUrl={`${menu.Server_api}/serie/home/top10`}
                     handlers={Handler}
-                    isRanked // Se você tiver um estilo especial para números 1, 2, 3...
+                    isRanked
                 />
 
                 <SeriesRow 

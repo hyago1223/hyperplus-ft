@@ -21,10 +21,11 @@ export default function SeriesRow({ title, fetchUrl, handlers, isRanked, isLarge
                 
                 if (res.ok) {
                     const data = await res.json();
-                    if(data.data){
-                        setSeries(data.data);
+                    if(data){
+                        setSeries(data.data || []);
                     }
-                    setSeries([]);
+                } else {
+                    console.error("Erro ao buscar série:", title, `Status ${res.status}`);
                 }
             } catch (error) {
                 console.error("Erro ao buscar fila:", title, error);
@@ -35,13 +36,13 @@ export default function SeriesRow({ title, fetchUrl, handlers, isRanked, isLarge
         fetchData();
     }, [fetchUrl]);
 
-    if (loading || series.length === 0) return null;
+    if (loading || series.length == 0) return null;
 
     return (
         <div className={styles.rowContainer}>
             <h2 className={styles.rowTitle}>{title}</h2>
             <div className={styles.rowPosters}>
-                {series?.map((serie) => (
+                {Array.isArray(series) && series.map((serie) => (
                     <SeriesCard 
                         key={serie.id} 
                         serie={serie} 
