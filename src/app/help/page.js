@@ -1,35 +1,38 @@
 "use client";
+
 import { useState } from "react";
 import menu from "../../components/menu";
-import { getCookie } from "@/components/auth/Cookies";
+import { useAuth } from "@/components/auth/AuthContext";
 
 export default function Help() {
-  const token = getCookie("token") || null;
-  const [email, setEmail] = useState('');
-  const [mensagem, setMensagem] = useState('');
+  const { isLoggedIn } = useAuth();
+
+  const [email, setEmail] = useState("");
+  const [mensagem, setMensagem] = useState("");
+  const [status, setStatus] = useState("");
 
   const handlerSubmit = async (e) => {
-    e.preventDefault()
-    setStatus("Enviando");
-    if(!token || !email){
-      return setStatus("Voce precisa colocar seu email!");
+    e.preventDefault();
+
+    setStatus("Enviando...");
+
+    if (!isLoggedIn && !email) {
+      setStatus("Você precisa colocar seu email!");
+      return;
     }
 
-    if(!mensagem){
-      return setStatus("Voce precisa colocar uma messagem");
+    if (!mensagem) {
+      setStatus("Você precisa colocar uma mensagem.");
+      return;
     }
 
-    try{
-      let endpoint = '';
+    try {
+      let endpoint = "";
       let bodyData = {};
-      let headersData = {
-        'Content-Type': 'application/json',
-      };
 
-      if (token) {
+      if (isLoggedIn) {
         endpoint = `${menu.Server_api}/help`;
         bodyData = { mensagem };
-        headersData.Authorization = `Bearer ${token}`; 
       } else {
         endpoint = `${menu.Server_api}/help/email`;
         bodyData = { mensagem, email };
@@ -37,38 +40,61 @@ export default function Help() {
 
       const res = await fetch(endpoint, {
         method: "POST",
-        headers: headersData,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
         body: JSON.stringify(bodyData),
       });
 
       if (res.ok) {
         setStatus("Mensagem enviada com sucesso! Em breve entraremos em contato.");
-        setEmail('');
-        setMensagem('');
+        setEmail("");
+        setMensagem("");
       } else {
         const errorData = await res.json();
-        setStatus(`Erro (${res.status}): ${errorData.message || 'Falha ao processar.'}`);
+
+        setStatus(
+          `Erro (${res.status}): ${errorData.message || "Falha ao processar."}`
+        );
       }
-    }catch(err){
-      setStatus("Erro ao enviar a messagem")
+    } catch (err) {
+      console.error("Erro ao enviar mensagem:", err);
+      setStatus("Erro ao enviar a mensagem.");
     }
-  }
+  };
 
   return (
     <main>
       <h1>Help Center</h1>
+
       <div>
-        <h3> Faça sua pergunta </h3>
+        <h3>Faça sua pergunta</h3>
+
+        {status && <p>{status}</p>}
+
         <form onSubmit={handlerSubmit}>
+          {!isLoggedIn && (
+            <div>
+              <label>Email:</label>
+              <input
+                placeholder="exemplo@dominio.com"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
+          )}
+
           <div>
-            <label>Email:</label>
-            <input placeholder="exemplo@dominio.tipo" type="email" value={email} onChange={(e) => {setEmail(e.target.value)}}/>
+            <label>Mensagem:</label>
+            <textarea
+              value={mensagem}
+              onChange={(e) => setMensagem(e.target.value)}
+            />
           </div>
-          <div>
-            <label>Messagem: </label>
-            <textarea value={mensagem} onChange={ (e) => {setMensagem(e.target.value)} }/>
-          </div>
-          <button type="submit">Submit</button>
+
+          <button type="submit">Enviar</button>
         </form>
       </div>
     </main>

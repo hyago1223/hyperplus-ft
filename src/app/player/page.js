@@ -37,9 +37,7 @@ export default function PlayerPage() {
             }
 
             if (source === 'episode') {
-                const res = await fetch(
-                    `${menu.Server_api}/episode/${id}`
-                );
+                const res = await fetch(`${menu.Server_api}/episode/${id}`);
 
                 if (!res.ok) throw new Error("Erro ao carregar episódio");
 

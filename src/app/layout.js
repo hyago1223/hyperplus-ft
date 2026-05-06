@@ -1,6 +1,7 @@
 import "./globals.css";
 import Header from "@/components/header.js"
 import Footer from "@/components/footer.js";
+import { AuthProvider } from "@/components/auth/AuthContext";
 import { ThemeProvider } from "@/components/css/ThemeProvider";
 
 export default function RootLayout({ children }) {
@@ -8,11 +9,13 @@ export default function RootLayout({ children }) {
     <html lang="en" data-theme="dark" suppressHydrationWarning>
       <body className={`antialiased`}>
         <ThemeProvider>
-          <Header/>
-          <main>
-            {children}
-          </main>
-          <Footer/>
+          <AuthProvider>
+            <Header/>
+              <main>
+                {children}
+              </main>
+            <Footer/>
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>
