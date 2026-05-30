@@ -1,12 +1,10 @@
 'use client';
-
 import { useEffect, useRef, useState } from "react";
 import menu from "@/components/menu";
 import styles from "./styles.module.css";
 
 export default function VideoPlayer({ episodeId }) {
   const videoRef = useRef(null);
-
   const [video, setVideo] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -27,6 +25,7 @@ export default function VideoPlayer({ episodeId }) {
 
         const res = await fetch(`${menu.Server_api}/episode/${episodeId}`, {
           signal: controller.signal,
+          credentials: "include",
         });
 
         if (!res.ok) {
@@ -50,11 +49,11 @@ export default function VideoPlayer({ episodeId }) {
   }, [episodeId]);
 
   useEffect(() => {
-    if (!video?.video_url || !videoRef.current) return;
+    if (!videoRef.current) return;
 
     const videoElement = videoRef.current;
 
-    const videoUrl = `${menu.Server_api}${video.video_url}`;
+    const videoUrl = `${menu.Server_api}/serie/episodes/${episodeId}/stream`;
 
     videoElement.src = videoUrl;
     videoElement.load();
@@ -76,6 +75,7 @@ export default function VideoPlayer({ episodeId }) {
       controls
       autoPlay
       playsInline
+      crossOrigin="use-credentials"
     />
   );
 }

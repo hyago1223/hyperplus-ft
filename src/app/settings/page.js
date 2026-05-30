@@ -5,19 +5,26 @@ import styles from "./styles.module.css";
 import { ThemeSwitcher } from "@/components/css/ThemeSwitch.js";
 import { useAuth } from "@/components/auth/AuthContext";
 
+const object = {
+    passwordChange: {
+    current: "",
+    new: "",
+    confirm: "",
+    },
+    message: {
+    type: "",
+    text: "",
+    }
+}
+
 export default function Settings() {
     const { logout } = useAuth();
-
     const [user, setUser] = useState(null);
     const [userImage, setUserImage] = useState("/img/default.jpg");
     const [loading, setLoading] = useState(true);
     const [name, setName] = useState("");
-    const [passwordData, setPasswordData] = useState({
-        current: "",
-        new: "",
-        confirm: "",
-    });
-    const [message, setMessage] = useState({ type: "", text: "" });
+    const [passwordData, setPasswordData] = useState(object.passwordChange);
+    const [message, setMessage] = useState(object.message);
 
     const fileInputRef = useRef(null);
 
@@ -200,7 +207,7 @@ export default function Settings() {
     }
 
     return (
-        <main className={styles.container}>
+        <div className={styles.container}>
             <div className={styles.wrapper}>
                 <h1 className={styles.title}>Minha Conta</h1>
 
@@ -371,6 +378,6 @@ export default function Settings() {
                     </div>
                 </div>
             </div>
-        </main>
+        </div>
     );
 }

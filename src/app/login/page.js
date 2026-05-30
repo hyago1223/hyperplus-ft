@@ -79,7 +79,7 @@ export default function Login() {
                         <div className={styles.labelRow}>
                             <label htmlFor="password">Senha</label>
 
-                            <Link href="/login/forgot" className={styles.link}>
+                            <Link href="/login/forgotPassword" className={styles.link}>
                                 Esqueceu Senha/email
                             </Link>
                         </div>
@@ -104,7 +104,7 @@ export default function Login() {
                     </div>
 
                     <div className={styles.continueLogged}>
-                        <label>
+                        <label htmlFor="isContinueLogged">
                             <input
                                 className={styles.input}
                                 type="checkbox"
@@ -124,10 +124,7 @@ export default function Login() {
                 </form>
 
                 <h3 hidden>OR</h3>
-
-                <div hidden>
-                    <button onClick={HandlerCode}>Login with code</button>
-                </div>
+                <div hidden><button onClick={HandlerCode}>Login with code</button></div>
 
                 <div className={styles.footer}>
                     <span>Não tem uma conta? </span>

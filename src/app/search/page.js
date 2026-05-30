@@ -1,5 +1,5 @@
 'use client';
-import { useSearchParams,useRouter } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import menu from "../../components/menu";
 import { useEffect, useState } from "react";
 import styles from './styles.module.css'
@@ -8,13 +8,26 @@ import styles from './styles.module.css'
 function ResultCard({serie}){
     const router = useRouter()
     const imageURL = `${menu.Server_api}/serie/image/${serie.id}`;
+
+    const handleNavigate = () => {
+        router.push(`/serie?id=${serie.id}`);
+    };
+
     return (
-        <div onClick={(e)=>{e.preventDefault(); router.push(`/serie?id=${serie.id}`)}} className={styles.resultCard}>
+        <button 
+            onClick={handleNavigate} 
+            className={styles.resultCard}
+            style={{ border: 'none', background: 'none', cursor: 'pointer', padding: 0 }}
+        >
             <div className={styles.imageWrapper}>
-                <img src={imageURL} alt={serie.title} onError={(e) => e.target.src = 'img/placeholder.png'}/>
+                <img 
+                    src={imageURL} 
+                    alt={serie.title} 
+                    onError={(e) => e.target.src = '/img/placeholder.png'}
+                />
             </div>
             <h3>{serie.title}</h3>
-        </div>
+        </button>
     );
 }
 export default function SearchPage(){
@@ -32,7 +45,7 @@ export default function SearchPage(){
                         headers: {
                             "Content-Type": "application/json",
                         }
-            })
+            });
             if(!res.ok) throw new Error("Erro na requisição");
             const data = await res.json();
             const list = Array.isArray(data)? data : (data.data || []);
@@ -51,9 +64,6 @@ export default function SearchPage(){
     
     return (
         <main className={styles.mainContainer}>
-                <div hidden className="container-search-category">
-                    
-                </div>
                 <div className={styles.headerResult}>
                     <h1>Resultados para: <span>"{query}"</span></h1>
                 </div>

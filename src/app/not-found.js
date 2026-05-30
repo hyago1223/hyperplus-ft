@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useRef } from 'react';
 
 export default function notfound (){
-    const router = useRouter()
+    const router = useRouter();
     const audioRef = useRef(null);
     function handleClick() {
         router.push('/');
@@ -17,7 +17,7 @@ export default function notfound (){
     }
 
     return (
-        <div>
+        <div className='not-found-container'>
             <h1>404 - Page Not Found</h1>
             <img
             onClick={()=>{clickDog()}}

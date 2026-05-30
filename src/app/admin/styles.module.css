@@ -1,0 +1,532 @@
+/* Container Principal */
+.mainContainer {
+  min-height: 100vh;
+  padding: 28px;
+  background: var(--bg-page);
+  color: var(--text-primary);
+  font-family: inherit;
+}
+
+/* Títulos */
+.mainContainer h2,
+.mainContainer h3,
+.mainContainer h4 {
+  color: var(--text-primary);
+  margin-bottom: 14px;
+}
+
+.mainContainer h2 {
+  font-size: 1.7rem;
+  font-weight: 800;
+}
+
+.mainContainer h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.mainContainer h4 {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+/* Botões Gerais */
+.button,
+.submitButton,
+.formButton,
+.episodeDetailsButton,
+.uploadButton,
+.addEpisodeButton {
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: inherit;
+  font-weight: 700;
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    filter 0.2s ease;
+}
+
+.button:hover,
+.submitButton:hover,
+.formButton:hover,
+.episodeDetailsButton:hover,
+.uploadButton:hover,
+.addEpisodeButton:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.08);
+}
+
+.button:active,
+.submitButton:active,
+.formButton:active,
+.episodeDetailsButton:active,
+.uploadButton:active,
+.addEpisodeButton:active {
+  transform: translateY(0);
+}
+
+.button {
+  padding: 10px 20px;
+  background: var(--admin-secondary);
+  color: #fff;
+}
+
+.buttonSuccess {
+  background: var(--admin-success);
+}
+
+.buttonSuccess:hover {
+  background: var(--admin-success-hover);
+}
+
+.buttonDanger {
+  background: var(--admin-danger);
+}
+
+.buttonDanger:hover {
+  background: var(--admin-danger-hover);
+}
+
+/* Search */
+.searchForm {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 24px;
+  padding: 16px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+}
+
+.searchInput {
+  width: 100%;
+  max-width: 360px;
+  padding: 11px 14px;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  background: var(--admin-form-bg);
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+.searchInput::placeholder {
+  color: var(--text-secondary);
+}
+
+.searchInput:focus {
+  border-color: var(--input-focus-border);
+  box-shadow: 0 0 0 3px rgba(28, 231, 131, 0.15);
+  outline: none;
+}
+
+.submitButton {
+  padding: 11px 18px;
+  background: var(--admin-secondary);
+  color: #fff;
+  white-space: nowrap;
+}
+
+.submitButton:hover {
+  background: var(--admin-secondary-hover);
+}
+
+.submitButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* User Management */
+.userSection h2 {
+  margin-bottom: 18px;
+}
+
+.userStats {
+  margin-top: 20px;
+  padding: 18px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  color: var(--text-secondary);
+}
+
+/* Tabela */
+.userTable {
+  width: 100%;
+  margin-top: 18px;
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+}
+
+.userTable thead {
+  background: rgba(28, 231, 131, 0.1);
+}
+
+.userTable th {
+  padding: 14px;
+  text-align: left;
+  color: var(--text-primary);
+  font-weight: 800;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.userTable td {
+  padding: 13px 14px;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.userTable tr:last-child td {
+  border-bottom: none;
+}
+
+.userTable tbody tr {
+  transition: background 0.2s ease;
+}
+
+.userTable tbody tr:hover {
+  background: rgba(28, 231, 131, 0.06);
+}
+
+/* Episode Form */
+.formContainer {
+  margin-top: 18px;
+  padding: 20px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
+}
+
+.formContainerAdd {
+  border-color: rgba(16, 185, 129, 0.75);
+  background:
+    linear-gradient(rgba(16, 185, 129, 0.06), rgba(16, 185, 129, 0.02)),
+    var(--bg-surface);
+}
+
+.formContainerEdit {
+  border-color: rgba(59, 130, 246, 0.75);
+  background:
+    linear-gradient(rgba(59, 130, 246, 0.06), rgba(59, 130, 246, 0.02)),
+    var(--bg-surface);
+}
+
+.formInput,
+.formTextarea {
+  width: 100%;
+  padding: 11px 14px;
+  margin-bottom: 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  box-sizing: border-box;
+  background: var(--admin-form-bg);
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  font-family: inherit;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+.formInput::placeholder,
+.formTextarea::placeholder {
+  color: var(--text-secondary);
+}
+
+.formInput:focus,
+.formTextarea:focus {
+  border-color: var(--input-focus-border);
+  box-shadow: 0 0 0 3px rgba(28, 231, 131, 0.15);
+  outline: none;
+}
+
+.formTextarea {
+  resize: vertical;
+  min-height: 90px;
+}
+
+.formButtons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.formButton {
+  padding: 10px 16px;
+  color: #fff;
+}
+
+.formButtonSubmit {
+  background: var(--admin-success);
+}
+
+.formButtonSubmit:hover {
+  background: var(--admin-success-hover);
+}
+
+.formButtonSubmitEdit {
+  background: var(--admin-secondary);
+}
+
+.formButtonSubmitEdit:hover {
+  background: var(--admin-secondary-hover);
+}
+
+.formButtonCancel {
+  background: var(--admin-danger);
+}
+
+.formButtonCancel:hover {
+  background: var(--admin-danger-hover);
+}
+
+/* Episodes List */
+.episodesList {
+  margin-top: 22px;
+  padding: 16px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+}
+
+.episodeItem {
+  padding: 14px;
+  margin-bottom: 10px;
+  background: var(--admin-form-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.episodeItem:last-child {
+  margin-bottom: 0;
+}
+
+.episodeItem strong {
+  color: var(--text-primary);
+}
+
+.episodeItem:hover {
+  transform: translateY(-2px);
+  background: rgba(28, 231, 131, 0.08);
+  border-color: var(--brand-neon);
+  box-shadow: 0 8px 20px rgba(28, 231, 131, 0.08);
+}
+
+.episodeItemSelected {
+  background: rgba(28, 231, 131, 0.14);
+  border-color: var(--brand-neon);
+  color: var(--text-primary);
+  box-shadow: 0 0 0 3px rgba(28, 231, 131, 0.12);
+}
+
+/* Episode Details */
+.episodeDetails {
+  margin-top: 22px;
+  padding: 18px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-left: 4px solid var(--brand-neon);
+  border-radius: 16px;
+  color: var(--text-primary);
+}
+
+.episodeDetails p {
+  margin: 8px 0;
+  color: var(--text-secondary);
+}
+
+.episodeDetails strong {
+  color: var(--text-primary);
+}
+
+.episodeDetailsButton {
+  margin-top: 12px;
+  margin-right: 10px;
+  padding: 10px 16px;
+  background: var(--admin-secondary);
+  color: #fff;
+}
+
+.episodeDetailsButton:hover {
+  background: var(--admin-secondary-hover);
+}
+
+/* Botão opcional para deletar episódio */
+.deleteEpisodeButton {
+  background: var(--admin-danger);
+}
+
+.deleteEpisodeButton:hover {
+  background: var(--admin-danger-hover);
+}
+
+/* Add Episode Button */
+.addEpisodeButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 12px;
+  padding: 10px 16px;
+  background: var(--admin-success);
+  color: #fff;
+}
+
+.addEpisodeButton:hover {
+  background: var(--admin-success-hover);
+}
+
+/* Upload Section */
+.uploadSection {
+  margin-top: 34px;
+  padding: 22px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+}
+
+.uploadSection h3 {
+  margin-bottom: 18px;
+}
+
+.uploadSection h4 {
+  margin-top: 18px;
+  color: var(--text-secondary);
+}
+
+.uploadForm {
+  margin-top: 12px;
+  padding: 16px;
+  background: var(--admin-form-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+}
+
+.uploadInput {
+  display: block;
+  width: 100%;
+  margin-bottom: 12px;
+  color: var(--text-secondary);
+}
+
+.uploadInput::file-selector-button {
+  margin-right: 12px;
+  padding: 9px 14px;
+  border: none;
+  border-radius: 8px;
+  background: var(--admin-secondary);
+  color: #fff;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.uploadInput::file-selector-button:hover {
+  background: var(--admin-secondary-hover);
+}
+
+.uploadButton {
+  padding: 10px 16px;
+  background: var(--admin-secondary);
+  color: #fff;
+}
+
+.uploadButton:hover {
+  background: var(--admin-secondary-hover);
+}
+
+/* Logs Section */
+.logsSection {
+  margin-top: 34px;
+  max-height: 320px;
+  overflow-y: auto;
+  padding: 16px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+}
+
+.logItem {
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  font-family: Consolas, Monaco, monospace;
+}
+
+.logItem:last-child {
+  border-bottom: none;
+}
+
+/* Scrollbar simples */
+.logsSection::-webkit-scrollbar {
+  width: 8px;
+}
+
+.logsSection::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 999px;
+}
+
+.logsSection::-webkit-scrollbar-thumb:hover {
+  background: var(--brand-dim);
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .mainContainer {
+    padding: 18px;
+  }
+
+  .searchForm {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .searchInput {
+    max-width: 100%;
+  }
+
+  .submitButton,
+  .addEpisodeButton,
+  .episodeDetailsButton,
+  .uploadButton,
+  .formButton {
+    width: 100%;
+  }
+
+  .formButtons {
+    flex-direction: column;
+  }
+
+  .userTable {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  .episodeDetailsButton {
+    margin-right: 0;
+  }
+}

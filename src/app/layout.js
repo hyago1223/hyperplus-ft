@@ -4,6 +4,15 @@ import Footer from "@/components/footer.js";
 import { AuthProvider } from "@/components/auth/AuthContext";
 import { ThemeProvider } from "@/components/css/ThemeProvider";
 
+export const metadata = {
+    home: "Home",
+    about: "About Us",
+    services: "Services",
+    contact: "Contact",
+    help: "Help Center",
+    Server_api: "http://localhost:3000"
+}
+
 export default function RootLayout({ children }) {
   return (
     <html lang="en" data-theme="dark" suppressHydrationWarning>

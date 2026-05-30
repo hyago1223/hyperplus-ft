@@ -27,24 +27,27 @@
     grid-template-columns: repeat(4, 1fr);
     gap: 15px;
     margin-bottom: 30px;
+}
 
-    ul {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-    }
-    li {
+.linksGrid ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.linksGrid li {
     margin-bottom: 12px;
-    }
-    a{
-        text-decoration: none;
-        color: #808080;
-        transition: color 0.2s ease;
-    }
-    a:hover {
+}
+
+.linksGrid a {
+    text-decoration: none;
+    color: #808080;
+    transition: color 0.2s ease;
+}
+
+.linksGrid a:hover {
     text-decoration: underline;
     color: #ffffff;
-    }
 }
 
 .supportText {

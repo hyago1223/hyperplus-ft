@@ -60,7 +60,7 @@ export default function Hero() {
 
             <div className={styles.buttons}>
                 <button onClick={() => router.push(`/player?source=serie&id=${highlight?.id}`)}>
-                ▶ Assistir agora
+                Assistir agora
                 </button>
                 <button onClick={() => router.push(`/serie?id=${highlight?.id}`)}>
                 Detalhes

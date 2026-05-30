@@ -23,16 +23,11 @@ export default function SeriesRow({ title, fetchUrl, handlers, isRanked, isLarge
                     credentials: "include",
                 });
 
-                if (res.ok) {
+                if (res.ok || res.status == 404) {
                     const data = await res.json();
                     setSeries(data.data || []);
                 } else {
-                    console.error(
-                        "Erro ao buscar série:",
-                        title,
-                        `Status ${res.status}`
-                    );
-
+                    console.error("Erro ao buscar série:",title,`Status ${res.status}`);
                     setSeries([]);
                 }
             } catch (error) {

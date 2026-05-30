@@ -5,11 +5,11 @@ import SeriesRow from "@/components/home/client/SeriesRow/index.js";
 import Hero from "@/components/home/client/Hero/Hero.js";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useAuth } from "@/components/auth/AuthContext.js";
 
 export default function Home() {
     const router = useRouter();
-
-    const [isLoged, setIsLoged] = useState(false);
+    const { isLoggedIn } = useAuth();
     const [categories, setCategories] = useState([]);
 
     const handlerDetails = (serie) => {
@@ -17,9 +17,8 @@ export default function Home() {
     };
 
     const handlerLike = async (serie) => {
-        const id_serie = serie.id;
-
-        const res = await fetch(`${menu.Server_api}/like/${id_serie}`, {
+        const idSerie = serie.id;
+        const res = await fetch(`${menu.Server_api}/like/${idSerie}`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
@@ -49,7 +48,6 @@ export default function Home() {
         async function loadCategories() {
             try {
                 const res = await fetch(`${menu.Server_api}/serie/home/categories`);
-
                 if (!res.ok) {
                     return;
                 }
@@ -61,33 +59,14 @@ export default function Home() {
             }
         }
 
-        async function loadLogin() {
-            try {
-                const res = await fetch(`${menu.Server_api}/user/auth`, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    credentials: "include",
-                });
-
-                setIsLoged(res.ok);
-            } catch (err) {
-                console.error("Erro ao verificar login:", err);
-                setIsLoged(false);
-            }
-        }
-
         loadCategories();
-        loadLogin();
     }, []);
 
     return (
         <div className="Home-Container">
             <Hero />
-
             <div className="rows-container">
-                {isLoged && (
+                {isLoggedIn && (
                     <div>
                         <SeriesRow
                             title="Continuar Assistindo"

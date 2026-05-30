@@ -13,12 +13,21 @@
 
   --input-focus-border: var(--brand-neon);
 
-  /* Footer Vars */
   --footer-background: #0A0F14;
   --footer-foreground: #94A3B8;
 
-  /* Button text */
+  /*  text */
   --button-foreground: #022C22;
+
+  /* admin Background */
+  --admin-success: #10b981;
+  --admin-success-hover: #059669;
+  --admin-secondary: #3b82f6;
+  --admin-secondary-hover: #2563eb;
+  --admin-danger: #6b7280;
+  --admin-danger-hover: #4b5563;
+  --admin-form-bg: #201d1d;
+  --admin-section-bg: #180d0d;
 }
 
 /* --- LIGHT THEME --- */
@@ -33,6 +42,16 @@
 
   --footer-background: #E8FFF3;
   --footer-foreground: #064E3B;
+
+  --admin-success: #059669;
+  --admin-success-hover: #047857;
+  --admin-secondary: #1e40af;
+  --admin-secondary-hover: #1e3a8a;
+  --admin-danger: #9ca3af;
+  --admin-danger-hover: #6b7280;
+  
+  --admin-form-bg: #f3f4f6;
+  --admin-section-bg: #e5e7eb;
 }
 
 /* GLOBAL */

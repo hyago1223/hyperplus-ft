@@ -1,6 +1,7 @@
 import styles from './style.module.css'
 import menu from '@/components/menu.js';
 import { useState, useEffect } from 'react';
+
 export default function SeriesCard({serie, handlerDetails, handlerLike, handlerWatch, isLargeRow}){
     const [photo ,setPhoto] = useState('/img/placeholder.png');
     async function GetImageUrl(serieId){

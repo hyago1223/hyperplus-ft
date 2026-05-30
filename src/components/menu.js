@@ -1,4 +1,3 @@
-
 const menu = {
     home: "Home",
     about: "About Us",

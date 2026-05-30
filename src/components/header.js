@@ -15,6 +15,7 @@ export default function Header() {
 
         if (searchTerm.trim()) {
             router.push(`/search?query=${encodeURIComponent(searchTerm)}`);
+            setSearchTerm('');
         }
     };
 
@@ -46,9 +47,11 @@ export default function Header() {
                 </div>
 
                 {isLoggedIn ? (
-                    <img
+                    <Link href="/settings">
+                        <img
                         src={imageUser}
                         alt="Perfil"
+                        draggable={false}
                         className="user-avatar"
                         onClick={() => router.push('/settings')}
                         style={{
@@ -58,7 +61,9 @@ export default function Header() {
                             borderRadius: '50%',
                             objectFit: 'cover',
                         }}
-                    />
+                        />
+                    </Link>
+                    
                 ) : (
                     <button
                         className="btn-login"

@@ -26,11 +26,15 @@ export default function PlayerPage() {
 
         try {
             if (source === 'serie') {
-                const res = await fetch(
-                    `${menu.Server_api}/user/historico/lastepisode?id_serie=${id}`
-                );
+                const res = await fetch(`${menu.Server_api}/user/historico/lastepisode?id_serie=${id}`,{credentials: "include"});
 
-                if (!res.ok) throw new Error("Erro ao buscar episódio");
+                if(!res.status === 404){
+                    res = await fetch(`${menu.Server_api}/serie/${id}/episodes?number=1`);
+
+                    if(!res.ok){
+                        throw new Error("Error ao busca episodio Serie");
+                    }
+                }
 
                 const data = await res.json();
                 setVideoData(data);
@@ -54,7 +58,7 @@ export default function PlayerPage() {
 
     useEffect(() => {
         loadPlayerData();
-    }, [loadPlayerData]);
+    }, [id]);
 
     if (loading) return <div className={styles.loading}>Carregando player...</div>;
     if (error) return <div className={styles.errorContainer}>{error}</div>;

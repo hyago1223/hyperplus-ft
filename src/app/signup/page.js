@@ -3,13 +3,14 @@ import { useState, useEffect } from "react";
 import menu from "../../components/menu";
 import style from "./style.module.css";
 import { useRouter } from "next/navigation";
-import { setAuthCookieToken } from "@/components/auth/Cookies.js";
+import { useAuth } from "@/components/auth/AuthContext";
 
 export default function Signup() {
     const router = useRouter();
     const [plansData, setPlansData] = useState([]);
     const [selectPlan, setSelectPlan] = useState([]);
     const [step, setStep] = useState(1);
+    const { login } = useAuth();
 
     useEffect(() => {
         async function loadPlans() {
@@ -25,6 +26,7 @@ export default function Signup() {
     }, []);
 
     async function Sign(formData) {
+        
         const userData = {
             plan: selectPlan.name,
             name: formData.get("name"),
@@ -41,30 +43,9 @@ export default function Signup() {
 
         if (res.ok) {
             await login(userData.email, userData.password);
+            router.refresh();
         } else {
             alert("Erro ao registrar");
-        }
-    }
-
-    async function login(email, password) {
-        try {
-            const res = await fetch(`${menu.Server_api}/user/login`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, password }),
-            });
-
-            const data = await res.json();
-
-            if (res.ok) {
-                const token = data.token;
-                await setAuthCookieToken(token);
-                router.push("/home");
-            } else {
-                alert(data.message);
-            }
-        } catch (err) {
-            console.error("Erro ao logar:", err);
         }
     }
 
@@ -106,7 +87,6 @@ export default function Signup() {
                     </div>
                 </div>
             )}
-
             {step === 2 && (
                 <form onSubmit={(e) => {
                     e.preventDefault();

@@ -2,11 +2,14 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import menu from "../../components/menu.js";
 import style from "@/components/css/Serie/style.module.css";
 import { useAuth } from "@/components/auth/AuthContext";
+import { UFetch,BFetch } from "@/service/fetch/index.js";
+import { envs as env } from '@/lib/env/index.js'
 
 function SeriesButtons({ serieId }) {
+    const [like, setLike] = useState(false);
+
     const router = useRouter();
     const { isLoggedIn } = useAuth();
 
@@ -17,24 +20,16 @@ function SeriesButtons({ serieId }) {
         }
 
         try {
-            const res = await fetch(`${menu.Server_api}/user/like/${serieId}`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                credentials: "include",
-            });
+            const res = await UFetch({API_URL: env.serverApi,endPoint: `/user/like/${serieId}`,type: "json",options: {method: "PUT",},});
 
-            if (res.ok) {
-                alert("Série curtida!");
-            } else if (res.status === 401) {
-                alert("Você precisa estar logado para curtir.");
+            if (res.success) {
+                console.log(res.message || "Série curtida!");
+                setLike(res.status);
             } else {
-                alert("Erro ao curtir a série.");
+                console.log("Erro ao curtir a série.");
             }
         } catch (err) {
             console.log("Erro de Rede:", err);
-            alert("Erro de Rede ao tentar curtir.");
         }
     };
 
@@ -42,14 +37,24 @@ function SeriesButtons({ serieId }) {
         router.push(`/player?source=serie&id=${serieId}`);
     };
 
+    useEffect(() =>{
+        async function loadlike() {
+            const data = await UFetch({API_URL: env.serverApi,endPoint: `/user/like/${serieId}`,type:"json", options: { method: "GET",},});
+            if(data.success){
+                setLike(data.status);
+            }
+        }
+        loadlike();
+    },[])
+
     return (
         <div className={style.buttonsContainer}>
             <button onClick={handlerWatch}>
                 Assistir
             </button>
 
-            <button onClick={handlerLike}>
-                Curtir
+            <button type="button" onClick={handlerLike}>
+                {like? (<>curtido</>) : (<>Curtir</>)}
             </button>
         </div>
     );
@@ -61,6 +66,7 @@ export default function Serie() {
     const id = params.get("id");
 
     const [serie, setSerie] = useState(null);
+    const [seriePhoto, setSeriePhoto] = useState(env.images.defaultSerie);
     const [episode, setEpisode] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -73,7 +79,7 @@ export default function Serie() {
         if (!serieId) return;
 
         try {
-            const res = await fetch(`${menu.Server_api}/serie/${serieId}`, {
+            const res = await fetch(`${env.serverApi}/serie/${serieId}`, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
@@ -95,7 +101,7 @@ export default function Serie() {
         if (!serieId) return;
 
         try {
-            const res = await fetch(`${menu.Server_api}/serie/${serieId}/episodes`, {
+            const res = await fetch(`${env.serverApi}/serie/${serieId}/episodes`, {
                 method: "GET",
             });
 
@@ -111,6 +117,17 @@ export default function Serie() {
         }
     }
 
+    async function getBlobSerieCard(serieId) {
+        if(!serieId) return;
+
+        try{
+            const resquest = await BFetch(serieId,"image");
+            setSeriePhoto(resquest)
+        }catch(err){
+            return;
+        }
+    }
+
     useEffect(() => {
         if (!id) return;
 
@@ -120,6 +137,7 @@ export default function Serie() {
         Promise.all([
             GetDataSerie(id),
             GetDataEpisodes(id),
+            getBlobSerieCard(id),
         ]).finally(() => {
             setLoading(false);
         });
@@ -127,39 +145,39 @@ export default function Serie() {
 
     if (loading) {
         return (
-            <main>
+            <div>
                 <div className={style.fullPageCenter}>
                     <p>Carregando...</p>
                 </div>
-            </main>
+            </div>
         );
     }
 
     if (error) {
         return (
-            <main>
+            <div>
                 <div className={style.fullPageCenter}>
                     <p className={style.errorMessage}>Erro: {error}</p>
                 </div>
-            </main>
+            </div>
         );
     }
 
     if (!serie) {
         return (
-            <main>
+            <div>
                 <div className={style.fullPageCenter}>
                     <p>Série não encontrada.</p>
                 </div>
-            </main>
+            </div>
         );
     }
 
     return (
-        <main>
+        <div>
             <div className={style.serieContainer}>
                 <div className={style.serieImageWrapper}>
-                    <img src={serie.url_image} alt={serie.title} />
+                    <img src={seriePhoto} alt={serie.title} />
                 </div>
 
                 <div className={style.serieDetails}>
@@ -167,7 +185,7 @@ export default function Serie() {
                     <h3 className={style.serieGenre}>{serie.genre}</h3>
                     <h3 className={style.serieYear}>{serie.year}</h3>
 
-                    <SeriesButtons serieId={id} />
+                    {(<SeriesButtons serieId={id} />)}
 
                     <p className={style.serieDescription}>
                         {serie.description}
@@ -186,12 +204,14 @@ export default function Serie() {
                                     {ep.numero || index + 1}. {ep.title}
                                 </span>
 
-                                <button
-                                    onClick={() => HandlerWatchSubmit(ep.id)}
-                                    className={style.episodeWatchButton}
-                                >
+                                {isLoggedIn &&(
+                                    <button
+                                        onClick={() => HandlerWatchSubmit(ep.id)}
+                                        className={style.episodeWatchButton}
+                                    >
                                     Assistir
-                                </button>
+                                    </button>
+                                )}
                             </div>
                         ))
                     ) : (
@@ -199,6 +219,6 @@ export default function Serie() {
                     )}
                 </div>
             </div>
-        </main>
+        </div>
     );
 }

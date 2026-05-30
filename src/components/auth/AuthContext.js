@@ -2,7 +2,8 @@
 
 import { createContext, useContext, useEffect, useState } from 'react';
 import { useRouter } from "next/navigation";
-import menu from '../menu.js';
+import { envs as env } from '@/lib/env/index.js';
+import { UFetch } from '@/service/fetch';
 
 const AuthContext = createContext(null);
 
@@ -17,7 +18,7 @@ export function AuthProvider({ children }) {
         try {
             setLoading(true);
 
-            const res = await fetch(`${menu.Server_api}/user/image`, {
+            const res = await fetch(`${env.serverApi}/user/image`, {
                 method: 'GET',
                 credentials: 'include',
             });
@@ -43,19 +44,7 @@ export function AuthProvider({ children }) {
 
     async function login({ email, password, isContinueLogged }) {
         try {
-            const res = await fetch(`${menu.Server_api}/user/login`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                credentials: "include",
-                body: JSON.stringify({
-                    email,
-                    password,
-                    isContinueLogged,
-                }),
-            });
-
+            const res = await UFetch({API_URL: env.serverApi,endPoint: env.routes.login,options: { method: "POST", body: { email, password, isContinueLogged},},});
             const data = await res.json();
 
             if (res.ok) {
@@ -83,7 +72,7 @@ export function AuthProvider({ children }) {
     }
     async function logout() {
         try {
-            await fetch(`${menu.Server_api}/auth/logout`, {
+            await fetch(`${env.serverApi}/user/logout`, {
                 method: 'POST',
                 credentials: 'include',
             });
@@ -93,6 +82,22 @@ export function AuthProvider({ children }) {
             router.push("/login");
         }
     }
+
+    async function isTokenValid() {
+        try{
+            const res = fetch(`${env.serverApi}/user/auth`,{
+                method: "GET",
+                credentials: "include",
+            });
+
+            if(!res.ok)
+                return false;
+            return true;
+        }catch(err){
+            console.error("Error ao autenticar");
+        }
+    }
+
 
     useEffect(() => {
         loadUser();
@@ -107,6 +112,7 @@ export function AuthProvider({ children }) {
                 loadUser,
                 login,
                 logout,
+                isTokenValid,
             }}
         >
             {children}

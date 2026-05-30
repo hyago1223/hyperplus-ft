@@ -1,18 +1,17 @@
 'use client';
-
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import menu from "../components/menu";
 import styles from "./styles.module.css";
 import Link from "next/link";
+import { envs as env } from "@/lib/env";
 
 export default function Home() {
   const router = useRouter();
   const [series, setSeries] = useState([]);
-
+  
   async function PickImageSeries() {
     try {
-      const res = await fetch(`${menu.Server_api}/serie/top10`);
+      const res = await fetch(`${env.serverApi}/serie/top10`);
 
       if (!res.ok) {
         throw new Error(`Erro ao buscar Top 10 séries: Status ${res.status}`);
@@ -22,7 +21,7 @@ export default function Home() {
       const data = series.data || [];
 
       const serieComImagens = data.map((serie) => {
-        const imageUrl = `${menu.Server_api}/serie/image/${serie.id}`;
+        const imageUrl = `${env.serverApi}/serie/image/${serie.id}`;
 
         return {
           ...serie,
@@ -36,32 +35,9 @@ export default function Home() {
     }
   }
 
-  async function checkLogin() {
-    try {
-      const res = await fetch(`${menu.Server_api}/user/auth`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-      });
-
-      if (res.ok) {
-        router.push("/home");
-      }
-    } catch (err) {
-      console.error("Erro ao verificar login:", err);
-    }
-  }
-
   useEffect(() => {
-    checkLogin();
     PickImageSeries();
   }, []);
-
-  function logup() {
-    router.push("/signup");
-  }
 
   return (
     <main>
@@ -79,7 +55,7 @@ export default function Home() {
           <button
             type="button"
             id="btn-cadastro"
-            onClick={logup}
+            onClick={() => {router.push("/signup")}}
             className={styles.btnCta}
           >
             log up
@@ -100,7 +76,7 @@ export default function Home() {
           {series.length > 0 ? (
             series.map((serie) => (
               <div key={serie.id} className={styles.card}>
-                <img src={serie.url_image} alt={serie.title} />
+                <img src={serie.url_image || null} alt={serie.title} />
                 <h3>{serie.title}</h3>
               </div>
             ))

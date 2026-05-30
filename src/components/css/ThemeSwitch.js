@@ -12,7 +12,6 @@ export function ThemeSwitcher() {
     setMounted(true);
   }, []);
 
-  // Se não estiver montado, não renderiza nada (ou renderiza um placeholder)
   if (!mounted) {
     return null;
   }
