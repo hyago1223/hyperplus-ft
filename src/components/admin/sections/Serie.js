@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { envs as env } from "@/lib/env";
 import { searchSeries, deleteSeries, uploadSerieImage, setSeriesAsHero, loadEpisodesBySerieId } from "@/service/fetch";
-import styles from '../../../app/admin/styles.module.css';
+import styles from '@/components/css/admin/styles.module.css';
 
 const FormDataSerie = {
   title: "",

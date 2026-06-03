@@ -1,4 +1,6 @@
-const Form = ({ onSubmit, onCancel, buttonLabel, title, children }) => {
+import styles from '@/components/css/admin/styles.module.css';
+
+export const Form = ({ onSubmit, onCancel, buttonLabel, title, children }) => {
   const isAdd = title.includes('Adicionar');
   return (
     <div className={`${styles.formContainer} ${isAdd ? styles.formContainerAdd : styles.formContainerEdit}`}>

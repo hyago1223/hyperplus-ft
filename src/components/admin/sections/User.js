@@ -1,8 +1,9 @@
 import { useState } from "react";
+import styles  from '@/components/css/admin/styles.module.css'
 import { envs as env } from "@/lib/env";
 
 const FormDataUser = {
-  id: "",
+  id: "", 
   name: "",
   email: "",
   birthdate: "",

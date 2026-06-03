@@ -64,6 +64,7 @@ export default function Serie() {
     const router = useRouter();
     const params = useSearchParams();
     const id = params.get("id");
+    const { isLoggedIn } = useAuth();
 
     const [serie, setSerie] = useState(null);
     const [seriePhoto, setSeriePhoto] = useState(env.images.defaultSerie);

@@ -1,10 +1,10 @@
 'use client';
-import styles from './styles.module.css';
+import styles from '@/components/css/admin/styles.module.css';
 import { useState } from 'react';
-import User from "@/components/admin/sections/user.js";
-import Status from '@/components/admin/sections/status.js';
-import Serie from '@/components/admin/sections/serie.js';
-import Episode from "@/components/admin/sections/episode.js";
+import User from "@/components/admin/sections/User.js";
+import Status from '@/components/admin/sections/Status.js';
+import Serie from '@/components/admin/sections/Serie.js';
+import Episode from "@/components/admin/sections/Episode.js";
 
 export default function AdminUploadPage() {
   const [windows, setWindows] = useState("");

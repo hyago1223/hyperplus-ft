@@ -1,81 +1,55 @@
 'use client';
 import { useEffect, useRef, useState } from "react";
+import VideoControler from "./VideoController";
 import menu from "@/components/menu";
 import styles from "./styles.module.css";
 
-export default function VideoPlayer({ episodeId }) {
+export default function VideoPlayer({ videoData }) {
+  const [VideoControllerShow, setVideoControllerShow] = useState(false);
+  const [buffering, setBuffering] = useState(false);
   const videoRef = useRef(null);
-  const [video, setVideo] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    if (!episodeId) {
-      setError("Episódio inválido");
-      setLoading(false);
-      return;
-    }
-
-    const controller = new AbortController();
-
-    async function loadEpisode() {
-      try {
-        setLoading(true);
-        setError(null);
-
-        const res = await fetch(`${menu.Server_api}/episode/${episodeId}`, {
-          signal: controller.signal,
-          credentials: "include",
-        });
-
-        if (!res.ok) {
-          throw new Error("Erro ao carregar episódio");
-        }
-
-        const data = await res.json();
-        setVideo(data);
-      } catch (err) {
-        if (err.name !== "AbortError") {
-          setError("Erro ao carregar vídeo");
-        }
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    loadEpisode();
-
-    return () => controller.abort();
-  }, [episodeId]);
 
   useEffect(() => {
     if (!videoRef.current) return;
 
     const videoElement = videoRef.current;
-
-    const videoUrl = `${menu.Server_api}/serie/episodes/${episodeId}/stream`;
+    const videoUrl = `${menu.Server_api}${videoData.video_url}`;
 
     videoElement.src = videoUrl;
     videoElement.load();
 
     return () => {
-      videoElement.pause();
-      videoElement.removeAttribute("src");
-      videoElement.load();
+      if(videoElement){
+        videoElement.pause();
+        videoElement.removeAttribute("src");
+        videoElement.load();
+      }
     };
-  }, [video]);
+  }, [videoData]);
 
-  if (loading) return <div className={styles.loading}>Carregando vídeo...</div>;
-  if (error) return <div className={styles.error}>{error}</div>;
+  useEffect(() =>{
+    const timeout = setTimeout(() => {
+      setVideoControllerShow(false);
+    }, 3000);
+    return () => clearTimeout(timeout);
+  },[VideoControllerShow])
 
   return (
-    <video
-      ref={videoRef}
-      className={styles.video}
-      controls
-      autoPlay
-      playsInline
-      crossOrigin="use-credentials"
-    />
+    <div className={styles.playerContainer} onMouseEnter={() => setVideoControllerShow(true)}>
+      <div className={styles.playerWrapper}>
+        <video
+        ref={videoRef}
+        className={styles.video}
+        controls = {false}
+        unselectable="off"
+        autoPlay
+        playsInline
+        crossOrigin="use-credentials"
+      />
+      </div>
+      <div className={`${styles.controlsContainer} ${VideoControllerShow ? styles.visible : ''}`}>
+        <VideoControler videoRef={videoRef}/>
+      </div>
+    </div>
   );
 }

@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { envs as env } from "@/lib/env";
-import { Form, EpisodeForm } from '../form.js'
-const API_URL = env.serverApi;
+import styles from '@/components/css/admin/styles.module.css';
+import { Form, EpisodeForm } from '../form.js';
+import { searchSeries, loadEpisodesBySerieId, createEpisode, updateEpisode, deleteEpisode, uploadEpisodeVideo, uploadEpisodeMetadata } from '@/service/fetch';
 
 const initialFormData = {
   title: "",
@@ -12,6 +13,14 @@ const initialFormData = {
   releaseDate: "",
 };
 
+const parseEpisodeData = (data) => ({
+  ...data,
+  episodeNumber: data.episodeNumber ? Number(data.episodeNumber) : null,
+  seasonNumber: data.seasonNumber ? Number(data.seasonNumber) : null,
+  releaseDate: data.releaseDate ? new Date(data.releaseDate).toISOString() : null,
+  duration: data.duration ? Number(data.duration) : null,
+});
+
 export default function Episode() {
   const [searchTerm, setSearchTerm] = useState("");
   const [series, setSeries] = useState([]);
@@ -19,6 +28,7 @@ export default function Episode() {
   const [episodes, setEpisodes] = useState([]);
   const [selectedEpisode, setSelectedEpisode] = useState(null);
   const [selectedSeason, setSelectSeason] = useState(null);
+  const [showUpload, setShowUpload] = useState(false);
   const [episodeId, setEpisodeId] = useState("");
   const [loading, setLoading] = useState(false);
   const [showAddForm, setShowAddForm] = useState(false);
@@ -26,275 +36,178 @@ export default function Episode() {
   const [newEpisodeData, setNewEpisodeData] = useState(initialFormData);
   const [editEpisodeData, setEditEpisodeData] = useState(initialFormData);
 
-    const uploadEpisodeVideo = async (e) => {
-    e.preventDefault();
-    
-    const fileInput = e.target.querySelector('input[type="file"]');
-    const file = fileInput?.files[0];
-
-    if (!file || !episodeId) return alert('Precisa de ID e Arquivo');
-
-    const formData = new FormData();
-    formData.append('EpisodeVideo', file); 
-
-    try {
-      const res = await fetch(`${API_URL}/admin/upload/episode-video/${episodeId}`, {
-        method: 'POST',
-        credentials: 'include',
-        body: formData,
-      });
-      const data = await res.json();
-      addLog(`Upload Vídeo Episódio: ${JSON.stringify(data)}`);
-    } catch (error) {
-      addLog(`Erro Vídeo Episódio: ${error.message}`);
-    }
-  };
-
-  const uploadMetadata = async (e) => {
-    e.preventDefault();
-    const formData = new FormData(e.target);
-    const payload = Object.fromEntries(formData); 
-
-    if (!episodeId) return alert('Precisa do ID do episódio');
-
-    try {
-      const res = await fetch(`${API_URL}/admin/upload/episode-metadata/${episodeId}`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
-      });
-      const data = await res.json();
-      addLog(`Upload Metadata: ${JSON.stringify(data)}`);
-    } catch (error) {
-      addLog(`Erro Metadata: ${error.message}`);
-    }
-  };
-
-    
-    async function requestJson(url, options = {}) {
-    const response = await fetch(url, {
-      credentials: "include",
-      ...options,
-      headers: {
-        ...(options.body ? { "Content-Type": "application/json" } : {}),
-        ...(options.headers || {}),
-      },
-    });
-    const text = await response.text();
-    let json;
-    try {
-      json = text ? JSON.parse(text) : {};
-    } catch {
-      console.error("Resposta não JSON:", text);
-      throw new Error("O servidor não retornou JSON");
-    }
-
-    if (!response.ok) {
-      throw new Error(json.message || `Erro HTTP ${response.status}`);
-    }
-
-    return json;
-  }
-
-  async function searchSeries(event) {
+  const handleSearchSeries = async (event) => {
     event.preventDefault();
-
-    if (!searchTerm.trim()) {
-      return alert("Digite o nome da série");
-    }
-
+    if (!searchTerm.trim()) return alert("Digite o nome da série");
+    
     setLoading(true);
-
     try {
-      const json = await requestJson(
-        `${API_URL}/search?query=${encodeURIComponent(searchTerm)}`
-      );
-
-      console.log("Séries encontradas:", json);
-
+      const json = await searchSeries(searchTerm);
       setSeries(Array.isArray(json.data) ? json.data : []);
       setSelectedSerie(null);
       setEpisodes([]);
       setSelectedEpisode(null);
-      setSelectSeason(null);
     } catch (err) {
       console.error(err);
       alert("Erro ao buscar séries");
     } finally {
       setLoading(false);
     }
-  }
+  };
 
-  async function loadEpisodesBySerieId(serieId) {
+  const handleLoadEpisodes = async (serieId) => {
     try {
-      const json = await requestJson(
-        `${API_URL}/admin/serie/${serieId}/episodes-metadata`
-      );
-
-      console.log("Episódios da série:", json);
-
+      const json = await loadEpisodesBySerieId(serieId);
       setEpisodes(Array.isArray(json.data) ? json.data : []);
     } catch (err) {
       console.error(err);
       alert("Erro ao carregar episódios da série");
     }
-  }
+  };
 
-  async function handleSelectSerie(serie) {
+  const handleSelectSerie = async (serie) => {
     setSelectedSerie(serie);
     setSelectedEpisode(null);
     setShowAddForm(false);
     setShowEditForm(false);
+    await handleLoadEpisodes(serie.id);
+  };
 
-    await loadEpisodesBySerieId(serie.id);
-  }
-
-  function handleSelectEpisode(episode) {
+  const handleSelectEpisode = (episode) => {
     setSelectedEpisode(episode);
     setEpisodeId(episode.id);
     setShowAddForm(false);
     setShowEditForm(false);
-  }
+  };
 
-  async function handleAddEpisode(event) {
+  const handleAddEpisode = async (event) => {
     event.preventDefault();
-
-    if (!selectedSerie?.id) {
-      return alert("Selecione uma série primeiro");
-    }
-
-    if (!newEpisodeData.title.trim()) {
-      return alert("Digite o título do episódio");
-    }
-
+    if (!selectedSerie?.id) return alert("Selecione uma série primeiro");
+    if (!newEpisodeData.title.trim()) return alert("Digite o título do episódio");
+    
     try {
+      setLoading(true);
       const payload = {
-        ...newEpisodeData,
+        ...parseEpisodeData(newEpisodeData),
         serieId: selectedSerie.id,
-        episodeNumber: newEpisodeData.episodeNumber ? Number(newEpisodeData.episodeNumber) : null,
-        seasonNumber: newEpisodeData.seasonNumber ? Number(newEpisodeData.seasonNumber) : null,
-        releaseDate: newEpisodeData.releaseDate ? Date(newEpisodeData.releaseDate) : null,
-        duration: newEpisodeData.duration ? Number(newEpisodeData.duration) : null,
       };
-
-      const json = await requestJson(`${API_URL}/admin/episode`, {
-        method: "POST",
-        body: JSON.stringify(payload),
-      });
-
-      if (json.success) {
-        alert("Episódio criado com sucesso!");
-        setNewEpisodeData(initialFormData);
-        setShowAddForm(false);
-        await loadEpisodesBySerieId(selectedSerie.id);
-      } else {
-        alert(json.message || "Erro ao criar episódio");
-      }
+      
+      await createEpisode(payload);
+      alert("Episódio criado com sucesso!");
+      setNewEpisodeData(initialFormData);
+      setShowAddForm(false);
+      await handleLoadEpisodes(selectedSerie.id);
     } catch (err) {
       console.error(err);
-      alert("Erro ao criar episódio");
+      alert(`Erro ao criar episódio: ${err.message}`);
+    } finally {
+      setLoading(false);
     }
-  }
+  };
 
-  async function handleEditEpisode(event) {
+  const handleEditEpisode = async (event) => {
     event.preventDefault();
-
-    if (!selectedEpisode?.id) {
-      return alert("Selecione um episódio primeiro");
-    }
-
+    if (!selectedEpisode?.id) return alert("Selecione um episódio primeiro");
+    
     try {
-      const payload = {
-        ...editEpisodeData,
-        episodeNumber: editEpisodeData.episodeNumber ? Number(editEpisodeData.episodeNumber) : null,
-        seasonNumber: newEpisodeData.seasonNumber ? Number(newEpisodeData.seasonNumber) : null,
-        releaseDate: newEpisodeData.releaseDate ? Date(newEpisodeData.releaseDate) : null,
-        duration: editEpisodeData.duration? Number(editEpisodeData.duration) : null,
-      };
-
-      const json = await requestJson(
-        `${API_URL}/admin/episode/${selectedEpisode.id}`,
-        {
-          method: "PUT",
-          body: JSON.stringify(payload),
-        }
-      );
-
-      if (json.success) {
-        alert("Episódio atualizado com sucesso!");
-
-        setShowEditForm(false);
-        setSelectedEpisode(null);
-        setSelectSeason(null);
-
-        await loadEpisodesBySerieId(selectedSerie.id);
-      } else {
-        alert(json.message || "Erro ao atualizar episódio");
-      }
+      setLoading(true);
+      const payload = parseEpisodeData(editEpisodeData);
+      await updateEpisode(selectedEpisode.id, payload);
+      alert("Episódio atualizado com sucesso!");
+      setShowEditForm(false);
+      setSelectedEpisode(null);
+      await handleLoadEpisodes(selectedSerie.id);
     } catch (err) {
       console.error(err);
-      alert("Erro ao atualizar episódio");
+      alert(`Erro ao atualizar: ${err.message}`);
+    } finally {
+      setLoading(false);
     }
-  }
+  };
 
-  async function handleDeleteEpisode() {
-    if (!selectedEpisode?.id) {
-      return alert("Selecione um episódio primeiro");
-    }
-
-    const confirmDelete = confirm(
-      `Deseja deletar o episódio "${selectedEpisode.title}"?`
-    );
-
-    if (!confirmDelete) return;
-
+  const handleDeleteEpisode = async () => {
+    if (!selectedEpisode?.id) return alert("Selecione um episódio primeiro");
+    if (!window.confirm(`Deseja deletar o episódio "${selectedEpisode.title}"?`)) return;
+    
     try {
-      const json = await requestJson(
-        `${API_URL}/admin/episode/${selectedEpisode.id}`,
-        {
-          method: "DELETE",
-        }
-      );
-
-      if (json.success) {
-        alert("Episódio deletado com sucesso!");
-
-        setSelectedEpisode(null);
-        setShowEditForm(false);
-
-        await loadEpisodesBySerieId(selectedSerie.id);
-      } else {
-        alert(json.message || "Erro ao deletar episódio");
-      }
+      setLoading(true);
+      await deleteEpisode(selectedEpisode.id);
+      alert("Episódio deletado com sucesso!");
+      setSelectedEpisode(null);
+      setShowEditForm(false);
+      await handleLoadEpisodes(selectedSerie.id);
     } catch (err) {
       console.error(err);
-      alert("Erro ao deletar episódio");
+      alert(`Erro ao deletar: ${err.message}`);
+    } finally {
+      setLoading(false);
     }
-  }
+  };
 
-  function openEditForm() {
+  const openEditForm = () => {
     if (!selectedEpisode) return;
-
     setEditEpisodeData({
       title: selectedEpisode.title || "",
       description: selectedEpisode.description || "",
       episodeNumber: selectedEpisode.episodeNumber || "",
-      seasonNumber: selectedSeason.seasonNumber || "",
+      seasonNumber: selectedEpisode.seasonNumber || "",
       releaseDate: selectedEpisode.releaseDate || "",
       duration: selectedEpisode.duration || "",
     });
-
     setShowEditForm(true);
+  };
+
+  const openUpload = () => {
+    if(!selectedEpisode) return;
+    setShowUpload(true)
   }
+
+  const handleUploadVideo = async (e) => {
+    e.preventDefault();
+    if (!episodeId) return alert('Selecione um episódio');
+    const fileInput = e.target.querySelector('input[type="file"]');
+    const file = fileInput?.files[0];
+    if (!file) return alert('Selecione um arquivo');
+    
+    try {
+      setLoading(true);
+      await uploadEpisodeVideo(selectedSerie.id,episodeId, file);
+      alert('Vídeo enviado com sucesso!');
+      e.target.reset();
+    } catch (error) {
+      console.error(error);
+      alert(`Erro: ${error.message}`);
+    } finally {
+      setLoading(false);
+      setShowUpload(false);
+    }
+  };
+
+  const handleUploadMetadata = async (e) => {
+    e.preventDefault();
+    if (!episodeId) return alert('Selecione um episódio');
+    
+    const formData = new FormData(e.target);
+    const payload = Object.fromEntries(formData);
+    
+    try {
+      setLoading(true);
+      await uploadEpisodeMetadata(episodeId, payload);
+      alert('Metadados enviados com sucesso!');
+      e.target.reset();
+    } catch (error) {
+      console.error(error);
+      alert(`Erro: ${error.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div style={{ padding: "10px" }}>
       <h2>Gerenciar Episódios</h2>
 
-      <form onSubmit={searchSeries} className={styles.searchForm}>
+      <form onSubmit={handleSearchSeries} className={styles.searchForm}>
         <input
           type="text"
           placeholder="Buscar Série"
@@ -332,7 +245,7 @@ export default function Episode() {
           <h4>Série selecionada:</h4>
           <p><strong>ID:</strong> {selectedSerie.id}</p>
           <p><strong>Título:</strong> {selectedSerie.title}</p>
-          <button onClick={() => setShowAddForm(true)} className={styles.addEpisodeButton}>
+          <button onClick={() => setShowAddForm(true)} className={styles.addEpisodeButton} disabled={loading}>
             + Adicionar Novo Episódio
           </button>
         </div>
@@ -360,7 +273,7 @@ export default function Episode() {
             >
               <strong>ID:</strong> {episode.id} <br />
               <strong>Título:</strong> {episode.title || "Sem título"} <br />
-              <strong>Temporada: </strong> {episode.seasonNumber || " N/A"} <br />
+              <strong>Temporada:</strong> {episode.seasonNumber || "N/A"} <br />
               <strong>Número:</strong> {episode.episodeNumber || "N/A"}
             </div>
           ))}
@@ -390,9 +303,10 @@ export default function Episode() {
             <p><strong>Duração:</strong> {selectedEpisode.duration}</p>
           )}
 
-          <p><strong>Episodio Upado URL:</strong> {selectedEpisode.url ? (<p>Episodio upado com sucesso</p>) : (<p>episodio não upado</p>)}</p>
+          <p><strong>Episodio Upado URL:</strong> {selectedEpisode.url ? ("Episodio upado com sucesso") : ("episodio não upado")}</p>
 
           <button onClick={openEditForm} className={styles.episodeDetailsButton}>✏️ Editar Episódio</button>
+          <button onClick={openUpload} className={styles.episodeDetailsButton}> Upload Video mp4</button>
           <button onClick={handleDeleteEpisode} className={styles.episodeDetailsButton}>🗑️ Deletar Episódio</button>
         </div>
       )}
@@ -406,29 +320,31 @@ export default function Episode() {
           children={<EpisodeForm data={editEpisodeData} onChange={setEditEpisodeData}/>}
         />
       )}
-
-      <section className={styles.uploadSection}>
+      {showUpload && selectedEpisode && (
+        <section className={styles.uploadSection}>
         <h3>Configuração de Episódio</h3>
-        <input type="text" placeholder="ID do Episódio" className={styles.formInput} value={episodeId}onChange={(e) => setEpisodeId(e.target.value)}/>
+        <input type="text" placeholder="ID do Episódio" className={styles.formInput} value={episodeId} onChange={(e) => setEpisodeId(e.target.value)} />
 
         <h4>3. Upload Vídeo</h4>
-        <form onSubmit={uploadEpisodeVideo} className={styles.uploadForm}>
-
-          <input type="file" name="file" accept="video/*" className={styles.uploadInput}/>
-
-          <button type="submit" className={styles.uploadButton}>Enviar Vídeo</button>
+        <form onSubmit={handleUploadVideo} className={styles.uploadForm}>
+          <input type="file" name="file" accept="video/*" className={styles.uploadInput} required />
+          <button type="submit" disabled={loading} className={styles.uploadButton}>
+            {loading ? 'Enviando...' : 'Enviar Vídeo'}
+          </button>
         </form>
 
         <h4>4. Upload Metadata</h4>
-        <form onSubmit={uploadMetadata} className={styles.uploadForm}>
-
+        <form onSubmit={handleUploadMetadata} className={styles.uploadForm}>
           <input name="title" placeholder="Título do Episódio" className={styles.formInput} required />
           <input name="description" placeholder="Descrição" className={styles.formInput} />
-          <input name="duration" placeholder="Duração" className={styles.formInput}/>
-
-          <button type="submit" className={styles.uploadButton}>Enviar Metadata JSON</button>
+          <input name="duration" placeholder="Duração" className={styles.formInput} />
+          <button type="submit" disabled={loading} className={styles.uploadButton}>
+            {loading ? 'Enviando...' : 'Enviar Metadata JSON'}
+          </button>
         </form>
       </section>
+      )}
+
     </div>
   );
 }

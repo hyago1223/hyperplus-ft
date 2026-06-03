@@ -23,9 +23,13 @@ export function AuthProvider({ children }) {
                 credentials: 'include',
             });
 
-            if (!res.ok) {
-                setIsLoggedIn(false);
+            if (res.status === 204) {
                 setImageUser('/img/default.jpg');
+                return;
+            }
+
+            if (!res.ok) {
+                console.error('Erro ao buscar foto');
                 return;
             }
 

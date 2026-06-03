@@ -6,6 +6,8 @@ import Hero from "@/components/home/client/Hero/Hero.js";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/components/auth/AuthContext.js";
+import { UFetch } from "@/service/fetch/index.js";
+import { envs as env } from "@/lib/env/index.js";
 
 export default function Home() {
     const router = useRouter();
@@ -47,12 +49,7 @@ export default function Home() {
     useEffect(() => {
         async function loadCategories() {
             try {
-                const res = await fetch(`${menu.Server_api}/serie/home/categories`);
-                if (!res.ok) {
-                    return;
-                }
-
-                const data = await res.json();
+                const data = await UFetch({ API_URL: env.serverApi, endPoint: '/serie/home/categories',options: { method: "GET",},type: "json",})
                 setCategories(data.data || []);
             } catch (err) {
                 console.error("Erro ao carregar categorias:", err);

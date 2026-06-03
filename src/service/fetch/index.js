@@ -152,4 +152,102 @@ export async function loadEpisodesBySerieId(serieId) {
     });
 }
 
-export default { UFetch, fetchEmail, BFetch, searchSeries, deleteSeries, uploadSerieImage, setSeriesAsHero, loadEpisodesBySerieId }
+// ============ EPISODE FUNCTIONS ============
+
+/**
+ * Cria um novo episódio
+ * @param {object} episodeData
+ * @returns {Promise<any>}
+ */
+export async function createEpisode(episodeData) {
+    return await UFetch({ 
+        API_URL: env.serverApi, 
+        endPoint: `/admin/episode`, 
+        type: "json",
+        options: { 
+            method: "POST",
+            body: episodeData
+        }
+    });
+}
+
+/**
+ * Atualiza um episódio existente
+ * @param {string|number} episodeId
+ * @param {object} episodeData
+ * @returns {Promise<any>}
+ */
+export async function updateEpisode(episodeId, episodeData) {
+    return await UFetch({ 
+        API_URL: env.serverApi, 
+        endPoint: `/admin/episode/${episodeId}`, 
+        type: "json",
+        options: { 
+            method: "PUT",
+            body: episodeData
+        }
+    });
+}
+
+/**
+ * Deleta um episódio
+ * @param {string|number} episodeId
+ * @returns {Promise<any>}
+ */
+export async function deleteEpisode(episodeId) {
+    return await UFetch({ 
+        API_URL: env.serverApi, 
+        endPoint: `/admin/episode/${episodeId}`, 
+        type: "json",
+        options: { method: "DELETE" }
+    });
+}
+
+/**
+ * Faz upload de vídeo para um episódio
+ * @param {number} episodeId
+ * @param {number} SerieId
+ * @param {File} file
+ * @returns {Promise<any>}
+ */
+export async function uploadEpisodeVideo(serieId,episodeId, file) {
+    const formData = new FormData();
+    formData.append('EpisodeVideo', file);
+    
+    const res = await fetch(`${env.serverApi}/admin/upload/episode-video/${episodeId}/${serieId}`, {
+        method: 'POST',
+        credentials: 'include',
+        body: formData,
+    });
+    
+    if (!res.ok) {
+        const error = await res.json().catch(() => ({}));
+        throw new Error(error.message || 'Erro ao fazer upload do vídeo');
+    }
+    
+    return await res.json();
+}
+
+/**
+ * Faz upload de metadados para um episódio
+ * @param {string|number} episodeId
+ * @param {object} metadata
+ * @returns {Promise<any>}
+ */
+export async function uploadEpisodeMetadata(episodeId, metadata) {
+    const res = await fetch(`${env.serverApi}/admin/upload/episode-metadata/${episodeId}`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(metadata),
+    });
+    
+    if (!res.ok) {
+        const error = await res.json().catch(() => ({}));
+        throw new Error(error.message || 'Erro ao fazer upload dos metadados');
+    }
+    
+    return await res.json();
+}
+
+export default { UFetch, fetchEmail, BFetch, searchSeries, deleteSeries, uploadSerieImage, setSeriesAsHero, loadEpisodesBySerieId, createEpisode, updateEpisode, deleteEpisode, uploadEpisodeVideo, uploadEpisodeMetadata }

@@ -10,7 +10,7 @@ export default function PlayerPage() {
     const source = params.get('source');
     const id = params.get('id');
 
-    const [videoData, setVideoData] = useState(null);
+    const [videoData, setVideoData] = useState([]);
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(true);
 
@@ -34,6 +34,8 @@ export default function PlayerPage() {
                     if(!res.ok){
                         throw new Error("Error ao busca episodio Serie");
                     }
+                }else  if(!res.ok){
+                    throw new Error("Error ao busca episodio Serie");
                 }
 
                 const data = await res.json();
@@ -41,7 +43,7 @@ export default function PlayerPage() {
             }
 
             if (source === 'episode') {
-                const res = await fetch(`${menu.Server_api}/episode/${id}`);
+                const res = await fetch(`${menu.Server_api}/serie/episodes/${id}`);
 
                 if (!res.ok) throw new Error("Erro ao carregar episódio");
 
@@ -65,7 +67,7 @@ export default function PlayerPage() {
 
     return (
         <div className={styles.playerContainer}>
-            <VideoPlayer episodeId={videoData?.id} />
+            <VideoPlayer videoData={videoData.data} />
         </div>
     );
 }

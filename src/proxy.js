@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { envs as env } from "./lib/env";
+const apiUrl = env.serverApi || "http://localhost:3000";
 
 export async function proxy(req) {
     console.log("Middleware ativou:", req.nextUrl.pathname);
@@ -17,13 +18,24 @@ export async function proxy(req) {
         return NextResponse.next();
     }
 
+    if(token && !(publicRoutes.includes(pathname))){
+         const res = await fetch(`${apiUrl}/user/auth`, {
+                method: "GET",
+                headers:{
+                    Cookie: `token=${token}`,
+                },
+                cache: 'no-store',
+            });
+        if(!res.ok)
+            await fetch(`${env.serverApi}/user/logout`, {method: 'POST',headers:{Cookie: `token=${token}`,},cache: 'no-store',});
+    }
+
     if (!token) {
         return NextResponse.redirect(new URL("/login", req.url));
     }
 
     if (restrictedRoutes.includes(pathname)) {
         try {
-            const apiUrl = env.serverApi || "http://localhost:3000";
             const res = await fetch(`${apiUrl}/admin/isAdmin`, {
                 method: "GET",
                 headers:{

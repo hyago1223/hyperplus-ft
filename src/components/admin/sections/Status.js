@@ -1,4 +1,7 @@
-import { useState } from "react";
+import { useState,useEffect } from "react";
+import { UFetch } from "@/service/fetch";
+import { envs as env } from "@/lib/env";
+import styles from '@/components/css/admin/styles.module.css';
 const toMB = (bytes) => `${(bytes / 1024 / 1024).toFixed(2)} MB`;
 
 
@@ -21,16 +24,13 @@ export default function Status() {
         }
       };
     
-        useEffect(()=>{
-            const interval = setInterval(checkStatus, 10000);
-            return () => clearInterval(interval);
-        },[windows])
     return (
         <section>
             <h3>1. Status do Servidor</h3>
+            <button onClick={checkStatus}>Status Server</button>
             {status.success ? (
                 <div>
-                <h2>Servidor BackEnd está <span style={{ color: 'green' }}>Conectado ✓</span></h2>
+                <h2>Servidor BackEnd está <span style={{ color: 'green' }}>Conectado </span></h2>
                 <div className="backend-status-container">
                     <h2 className="section-title"> Status do BackEnd</h2>
                     <div className="status-grid">

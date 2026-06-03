@@ -5,12 +5,12 @@ import { AuthProvider } from "@/components/auth/AuthContext";
 import { ThemeProvider } from "@/components/css/ThemeProvider";
 
 export const metadata = {
+    language_default: "en-us",
     home: "Home",
     about: "About Us",
     services: "Services",
     contact: "Contact",
-    help: "Help Center",
-    Server_api: "http://localhost:3000"
+    help: "Help Center"
 }
 
 export default function RootLayout({ children }) {
