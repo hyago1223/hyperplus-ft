@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import menu from "../../components/menu";
 import { useAuth } from "@/components/auth/AuthContext";
+import { envs as env } from "@/lib/env";
 
 export default function Help() {
   const { isLoggedIn } = useAuth();
@@ -31,13 +31,13 @@ export default function Help() {
       let bodyData = {};
 
       if (isLoggedIn) {
-        endpoint = `${menu.Server_api}/help`;
+        endpoint = `${env.serverApi}/help`;
         bodyData = { mensagem };
       } else {
-        endpoint = `${menu.Server_api}/help/email`;
+        endpoint = `${env.serverApi}/help/email`;
         bodyData = { mensagem, email };
       }
-
+    
       const res = await fetch(endpoint, {
         method: "POST",
         headers: {

@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState, useRef } from "react";
-import menu from "../../components/menu";
+import { envs as env } from "@/lib/env";
 import styles from "./styles.module.css";
 import { ThemeSwitcher } from "@/components/css/ThemeSwitch.js";
 import { useAuth } from "@/components/auth/AuthContext";
@@ -20,7 +20,7 @@ const object = {
 export default function Settings() {
     const { logout } = useAuth();
     const [user, setUser] = useState(null);
-    const [userImage, setUserImage] = useState("/img/default.jpg");
+    const [userImage, setUserImage] = useState(env.images.defaultUser);
     const [loading, setLoading] = useState(true);
     const [name, setName] = useState("");
     const [passwordData, setPasswordData] = useState(object.passwordChange);
@@ -32,7 +32,7 @@ export default function Settings() {
         try {
             setLoading(true);
 
-            const res = await fetch(`${menu.Server_api}/user/config`, {
+            const res = await fetch(`${env.serverApi}/user/config`, {
                 method: "GET",
                 credentials: "include",
             });
@@ -50,7 +50,7 @@ export default function Settings() {
             setUser(data.data);
             setName(data.data?.name || "");
 
-            const resImage = await fetch(`${menu.Server_api}/user/image`, {
+            const resImage = await fetch(`${env.serverApi}/user/image`, {
                 method: "GET",
                 credentials: "include",
             });
@@ -85,7 +85,7 @@ export default function Settings() {
             const previewUrl = URL.createObjectURL(file);
             setUserImage(previewUrl);
 
-            const res = await fetch(`${menu.Server_api}/user/upload/photo/${user.id}`, {
+            const res = await fetch(`${env.serverApi}/user/upload/photo/${user.id}`, {
                 method: "POST",
                 credentials: "include",
                 body: formData,
@@ -118,7 +118,7 @@ export default function Settings() {
         e.preventDefault();
 
         try {
-            const res = await fetch(`${menu.Server_api}/user/name`, {
+            const res = await fetch(`${env.serverApi}/user/name`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
@@ -162,7 +162,7 @@ export default function Settings() {
         }
 
         try {
-            const res = await fetch(`${menu.Server_api}/user/password`, {
+            const res = await fetch(`${env.serverApi}/user/password`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",

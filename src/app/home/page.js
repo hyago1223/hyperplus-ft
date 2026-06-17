@@ -1,6 +1,5 @@
 'use client';
 
-import menu from "../../components/menu.js";
 import SeriesRow from "@/components/home/client/SeriesRow/index.js";
 import Hero from "@/components/home/client/Hero/Hero.js";
 import { useRouter } from "next/navigation";
@@ -20,7 +19,7 @@ export default function Home() {
 
     const handlerLike = async (serie) => {
         const idSerie = serie.id;
-        const res = await fetch(`${menu.Server_api}/like/${idSerie}`, {
+        const res = await fetch(`${env.serverApi}/like/${idSerie}`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
@@ -67,20 +66,20 @@ export default function Home() {
                     <div>
                         <SeriesRow
                             title="Continuar Assistindo"
-                            fetchUrl={`${menu.Server_api}/serie/home/historico/serie`}
+                            fetchUrl={`${env.serverApi}/serie/home/historico/serie`}
                             handlers={Handler}
                             isLargeRow
                         />
 
                         <SeriesRow
                             title="Recomendados para Você"
-                            fetchUrl={`${menu.Server_api}/serie/home/recommended`}
+                            fetchUrl={`${env.serverApi}/serie/home/recommended`}
                             handlers={Handler}
                         />
 
                         <SeriesRow
                             title="Minha Lista"
-                            fetchUrl={`${menu.Server_api}/serie/home/watchlist`}
+                            fetchUrl={`${env.serverApi}/serie/home/watchlist`}
                             handlers={Handler}
                         />
                     </div>
@@ -88,26 +87,26 @@ export default function Home() {
 
                 <SeriesRow
                     title="Em Alta (Trending)"
-                    fetchUrl={`${menu.Server_api}/serie/home/trending?limit=15`}
+                    fetchUrl={`${env.serverApi}/serie/home/trending?limit=15`}
                     handlers={Handler}
                 />
 
                 <SeriesRow
                     title="Top 10 no Brasil Hoje"
-                    fetchUrl={`${menu.Server_api}/serie/home/top10`}
+                    fetchUrl={`${env.serverApi}/serie/home/top10`}
                     handlers={Handler}
                     isRanked
                 />
 
                 <SeriesRow
                     title="Novos Lançamentos"
-                    fetchUrl={`${menu.Server_api}/serie/home/newSeries`}
+                    fetchUrl={`${env.serverApi}/serie/home/newSeries`}
                     handlers={Handler}
                 />
 
                 <SeriesRow
                     title="Adicionados Recentemente"
-                    fetchUrl={`${menu.Server_api}/serie/home/latest/20`}
+                    fetchUrl={`${env.serverApi}/serie/home/latest/20`}
                     handlers={Handler}
                 />
 
@@ -115,7 +114,7 @@ export default function Home() {
                     <SeriesRow
                         key={cat.id}
                         title={cat.name}
-                        fetchUrl={`${menu.Server_api}/serie/home/series/${encodeURIComponent(cat.name)}`}
+                        fetchUrl={`${env.serverApi}/serie/home/series/${encodeURIComponent(cat.name)}`}
                         handlers={Handler}
                     />
                 ))}

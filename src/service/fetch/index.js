@@ -40,78 +40,62 @@ export async function UFetch({ API_URL, endPoint, type, options = {}, isNoCreden
 }
 
 /**
- * Ele mandar um request para mandar um email de recuperação
+ * Envia um request para mandar um email de recuperação
  * 
  * @param {string} email
  * @returns {Promise<boolean>}
  */
 export async function fetchEmail( email ) {
-    const res = await UFetch(env.serverApi,env.api.setEmail,"json",{ method: "POST", body:{email}});
-    if(res.ok)
-        return true;
-    return false;
+    return await crudOperation(env.api.user.setForgotEmail, "POST", { email })
+        .then(() => true)
+        .catch(() => false);
 }
 
 /**
  * Busca um arquivo como Blob.
- * @param {{
- *   id: number | string,
- *   type: "image" | "video" | "photo"
- * }} params
+ * @param {string|number} id
+ * @param {"image" | "video" | "photo"} type
  * @returns {Promise<Blob>}
  */
 export async function BFetch( id, type ) {
-    if(type==="photo"){
-        return await UFetch(env.serverApi,env.api.me,{ method:"GET" },)
+    if(type === "photo") {
+        return await UFetch({ API_URL: env.serverApi, endPoint: env.api.user.photo, type: "blob" });
     }
-    if(type==="video"){
-        return await UFetch(env.serverApi,env.api.me,{ method:"GET" },)
+    if(type === "image") {
+        const endPoint = replaceRouteParams(env.api.serie.image, { serieId: id });
+        return await UFetch({ API_URL: env.serverApi, endPoint, type: "blob" });
     }
-    if(type==="image"){
-        return await UFetch({ API_URL: env.serverApi, endPoint: `/serie/image/${id}`, options: { method:"GET", },type: "blob"});
-    }
+    throw new Error(`Tipo de arquivo desconhecido: ${type}`);
 }
 
-// ============ ADMIN FUNCTIONS ============
+// ============ HELPER FUNCTIONS ============
 
 /**
- * Busca séries por nome
- * @param {string} query
- * @returns {Promise<any>}
+ * Substitui parâmetros em uma rota
+ * @param {string} route - Rota com placeholders (ex: "/user/:id")
+ * @param {object} params - Objeto com parâmetros (ex: { id: 123 })
+ * @returns {string}
  */
-export async function searchSeries(query) {
-    return await UFetch({ 
-        API_URL: env.serverApi, 
-        endPoint: `/search?query=${encodeURIComponent(query)}`, 
-        type: "json" 
+function replaceRouteParams(route, params = {}) {
+    let result = route;
+    Object.entries(params).forEach(([key, value]) => {
+        result = result.replace(`:${key}`, value);
     });
+    return result;
 }
 
 /**
- * Deleta uma série
- * @param {string|number} serieId
- * @returns {Promise<any>}
- */
-export async function deleteSeries(serieId) {
-    return await UFetch({ 
-        API_URL: env.serverApi, 
-        endPoint: `/admin/serie/${serieId}`, 
-        type: "json",
-        options: { method: "DELETE" }
-    });
-}
-
-/**
- * Faz upload de imagem para uma série
- * @param {string|number} serieId
+ * Função genérica para upload de arquivos
+ * @param {string} endPoint
+ * @param {string} fieldName
  * @param {File} file
  * @returns {Promise<any>}
  */
-export async function uploadSerieImage(serieId, file) {
+async function uploadFile(endPoint, fieldName, file) {
     const formData = new FormData();
-    formData.append('SerieImage', file);
+    formData.append(fieldName, file);
     
-    const res = await fetch(`${env.serverApi}/admin/upload/serie-image/${serieId}`, {
+    const res = await fetch(`${env.serverApi}${endPoint}`, {
         method: 'POST',
         credentials: 'include',
         body: formData,
@@ -119,135 +103,77 @@ export async function uploadSerieImage(serieId, file) {
     
     if (!res.ok) {
         const error = await res.json().catch(() => ({}));
-        throw new Error(error.message || 'Erro ao fazer upload da imagem');
+        throw new Error(error.message || 'Erro ao fazer upload do arquivo');
     }
     
     return await res.json();
 }
 
 /**
- * Define uma série como hero
- * @param {string|number} serieId
+ * Função genérica para operações CRUD
+ * @param {string} endPoint
+ * @param {string} method
+ * @param {object} body
  * @returns {Promise<any>}
  */
-export async function setSeriesAsHero(serieId) {
+async function crudOperation(endPoint, method = "GET", body = null) {
     return await UFetch({ 
         API_URL: env.serverApi, 
-        endPoint: `/admin/serie/${serieId}/hero`, 
+        endPoint,
         type: "json",
-        options: { method: "PUT" }
+        options: { method, ...(body && { body }) }
     });
 }
 
-/**
- * Carrega episódios de uma série
- * @param {string|number} serieId
- * @returns {Promise<any>}
- */
-export async function loadEpisodesBySerieId(serieId) {
-    return await UFetch({ 
-        API_URL: env.serverApi, 
-        endPoint: `/admin/serie/${serieId}/episodes-metadata`, 
-        type: "json"
-    });
+// ============ SEARCH FUNCTIONS ============
+
+export const searchSeries = (query) => 
+    crudOperation(`${env.api.search}?query=${encodeURIComponent(query)}`);
+
+// ============ ADMIN - SERIE FUNCTIONS ============
+
+export const deleteSeries = (serieId) => 
+    crudOperation(`${env.api.admin.serie}/${serieId}`, "DELETE");
+
+export const setSeriesAsHero = (serieId) => 
+    crudOperation(`${env.api.admin.serie}/${serieId}/hero`, "PUT");
+
+export const loadEpisodesBySerieId = (serieId) => 
+    crudOperation(`${env.api.admin.serie}/${serieId}/episodes-metadata`);
+
+export const uploadSerieImage = (serieId, file) => 
+    uploadFile(replaceRouteParams(env.api.admin.uploadSerieImage, { serieId }), 'SerieImage', file);
+
+// ============ ADMIN - EPISODE FUNCTIONS ============
+
+export const createEpisode = (episodeData) => 
+    crudOperation(env.api.admin.episode, "POST", episodeData);
+
+export const updateEpisode = (episodeId, episodeData) => 
+    crudOperation(replaceRouteParams(`${env.api.admin.episode}/:episodeId`, { episodeId }), "PUT", episodeData);
+
+export const deleteEpisode = (episodeId) => 
+    crudOperation(replaceRouteParams(`${env.api.admin.episode}/:episodeId`, { episodeId }), "DELETE");
+
+export const uploadEpisodeVideo = (serieId, episodeId, file) => 
+    uploadFile(replaceRouteParams(env.api.admin.uploadEpisodeVideo, { episodeId, serieId }), 'EpisodeVideo', file);
+
+export const uploadEpisodeMetadata = (episodeId, metadata) => 
+    uploadFile(replaceRouteParams(env.api.admin.uploadEpisodeMetadata, { episodeId }), 'metadata', 
+        new File([JSON.stringify(metadata)], 'metadata.json', { type: 'application/json' }));
+
+export default { 
+    UFetch, 
+    fetchEmail, 
+    BFetch, 
+    searchSeries, 
+    deleteSeries, 
+    uploadSerieImage, 
+    setSeriesAsHero, 
+    loadEpisodesBySerieId, 
+    createEpisode, 
+    updateEpisode, 
+    deleteEpisode, 
+    uploadEpisodeVideo, 
+    uploadEpisodeMetadata 
 }
-
-// ============ EPISODE FUNCTIONS ============
-
-/**
- * Cria um novo episódio
- * @param {object} episodeData
- * @returns {Promise<any>}
- */
-export async function createEpisode(episodeData) {
-    return await UFetch({ 
-        API_URL: env.serverApi, 
-        endPoint: `/admin/episode`, 
-        type: "json",
-        options: { 
-            method: "POST",
-            body: episodeData
-        }
-    });
-}
-
-/**
- * Atualiza um episódio existente
- * @param {string|number} episodeId
- * @param {object} episodeData
- * @returns {Promise<any>}
- */
-export async function updateEpisode(episodeId, episodeData) {
-    return await UFetch({ 
-        API_URL: env.serverApi, 
-        endPoint: `/admin/episode/${episodeId}`, 
-        type: "json",
-        options: { 
-            method: "PUT",
-            body: episodeData
-        }
-    });
-}
-
-/**
- * Deleta um episódio
- * @param {string|number} episodeId
- * @returns {Promise<any>}
- */
-export async function deleteEpisode(episodeId) {
-    return await UFetch({ 
-        API_URL: env.serverApi, 
-        endPoint: `/admin/episode/${episodeId}`, 
-        type: "json",
-        options: { method: "DELETE" }
-    });
-}
-
-/**
- * Faz upload de vídeo para um episódio
- * @param {number} episodeId
- * @param {number} SerieId
- * @param {File} file
- * @returns {Promise<any>}
- */
-export async function uploadEpisodeVideo(serieId,episodeId, file) {
-    const formData = new FormData();
-    formData.append('EpisodeVideo', file);
-    
-    const res = await fetch(`${env.serverApi}/admin/upload/episode-video/${episodeId}/${serieId}`, {
-        method: 'POST',
-        credentials: 'include',
-        body: formData,
-    });
-    
-    if (!res.ok) {
-        const error = await res.json().catch(() => ({}));
-        throw new Error(error.message || 'Erro ao fazer upload do vídeo');
-    }
-    
-    return await res.json();
-}
-
-/**
- * Faz upload de metadados para um episódio
- * @param {string|number} episodeId
- * @param {object} metadata
- * @returns {Promise<any>}
- */
-export async function uploadEpisodeMetadata(episodeId, metadata) {
-    const res = await fetch(`${env.serverApi}/admin/upload/episode-metadata/${episodeId}`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(metadata),
-    });
-    
-    if (!res.ok) {
-        const error = await res.json().catch(() => ({}));
-        throw new Error(error.message || 'Erro ao fazer upload dos metadados');
-    }
-    
-    return await res.json();
-}
-
-export default { UFetch, fetchEmail, BFetch, searchSeries, deleteSeries, uploadSerieImage, setSeriesAsHero, loadEpisodesBySerieId, createEpisode, updateEpisode, deleteEpisode, uploadEpisodeVideo, uploadEpisodeMetadata }
