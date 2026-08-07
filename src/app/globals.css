@@ -246,12 +246,46 @@ footer {
   }
 }
 
-@media (max-width: 400px) {
-  .search-wrapper.active {
-    width: 130px;
+@media (max-width: 640px) {
+  .header-container {
+    flex-wrap: wrap;
+    height: auto;
+    padding: 8px 12px;
+    gap: 8px;
   }
 
+  .logo-link {
+    font-size: 1.05rem;
+  }
+
+  .search-wrapper,
+  .search-wrapper.active {
+    order: 3;
+    flex: 1 1 100%;
+    width: auto;
+    height: 38px;
+    justify-content: center;
+  }
+
+  .search-wrapper form {
+    justify-content: center;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .search-wrapper input,
   .search-wrapper.active input {
-    width: 80px;
+    width: 100%;
+    opacity: 1;
+    padding: 0;
+    pointer-events: auto;
+  }
+
+  .search-icon-btn {
+    display: none;
+  }
+
+  .search-wrapper:empty {
+    display: none;
   }
 }
