@@ -17,18 +17,19 @@ export default function notfound (){
     }
 
     return (
-        <div className='not-found-container'>
+        <main className='not-found-container'>
             <h1>404 - Page Not Found</h1>
             <img
-            onClick={()=>{clickDog()}}
-            className="DOG" 
-            src="/img/dog.gif" 
-            alt="Dog GIF" 
-            width={400} 
-            style={{imageRendering: 'pixelated'}}/>
+                onClick={()=>{clickDog()}}
+                className="DOG" 
+                src="/img/dog.gif" 
+                alt="Dog GIF" 
+                width={400} 
+                style={{imageRendering: 'pixelated'}}
+            />
             <h2>Ops, parece que voce entrou em uma aba que não Existe. Clique para voltar a aba inicial.</h2>
             <audio ref={audioRef} src="music/url.mp3" />
             <button onClick={handleClick}>Voltar para a Página Inicial</button>
-        </div>
+        </main>
     );
 }

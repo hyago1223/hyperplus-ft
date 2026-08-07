@@ -20,9 +20,7 @@ export default function RootLayout({ children }) {
         <ThemeProvider>
           <AuthProvider>
             <Header/>
-              <main>
                 {children}
-              </main>
             <Footer/>
           </AuthProvider>
         </ThemeProvider>

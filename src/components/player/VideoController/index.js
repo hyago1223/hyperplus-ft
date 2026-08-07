@@ -4,7 +4,7 @@ import styles from '../styles.module.css'
 import LeftButtons from "../LeftButtons";
 import RightButtons from "../RightButtons";
 
-export default function VideoControler({ videoRef }) {
+export default function VideoControler({ videoRef, playerRef }) {
     return (
         <div>
             <div className={styles.progressBarWrapper}>
@@ -15,7 +15,7 @@ export default function VideoControler({ videoRef }) {
                     <LeftButtons videoRef={videoRef}/>
                 </div>
                 <div className={styles.rightControls}>
-                    <RightButtons videoRef={videoRef}/>
+                    <RightButtons videoRef={videoRef} playerRef={playerRef}/>
                 </div>
             </div>
         </div>

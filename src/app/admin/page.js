@@ -10,7 +10,7 @@ export default function AdminUploadPage() {
   const [windows, setWindows] = useState("");
 
   return (
-    <div className={styles.mainContainer}>
+    <main className={styles.mainContainer}>
       <h1>Painel <strong>Admin</strong> (Raw Mode)</h1>
       <nav style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
         <button className={styles.button} onClick={() => setWindows("status")}>
@@ -31,6 +31,6 @@ export default function AdminUploadPage() {
       {windows === "users" && <User/>}
       {windows === "series" && <Serie/>}
       {windows === "episodios" && <Episode/>}
-    </div>
+    </main>
   );
 }

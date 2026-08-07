@@ -9,7 +9,7 @@ export default function Signup() {
     const router = useRouter();
     const [plansData, setPlansData] = useState([]);
     const [selectPlan, setSelectPlan] = useState([]);
-    const [step, setStep] = useState(1);
+    const [step, setStep] = useState("PLAN");
     const { login } = useAuth();
 
     useEffect(() => {
@@ -51,12 +51,12 @@ export default function Signup() {
 
     const HandleSelectPlan = (plan) => {
         setSelectPlan(plan);
-        setStep(2);
+        setStep("USER");
     };
 
     return (
         <div>
-            {step === 1 && (
+            {step === "PLAN" && (
                 <div className={style.stepContainer}>
                     <h2 className={style.title}>Escolha seu plano</h2>
 
@@ -87,7 +87,7 @@ export default function Signup() {
                     </div>
                 </div>
             )}
-            {step === 2 && (
+            {step === "USER" && (
                 <form onSubmit={(e) => {
                     e.preventDefault();
                     const formData = new FormData(e.target);

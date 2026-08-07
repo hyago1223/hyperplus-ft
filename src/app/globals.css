@@ -176,8 +176,14 @@ footer {
   border: none;
   outline: none;
   color: var(--text-primary);
+  text-align: left;
   font-size: 0.9rem;
   width: 180px; 
+  transition: width 0.3s;
+}
+
+.search-icon-btn:hover {
+  color: var(--button-foreground);
   transition: width 0.3s;
 }
 
@@ -194,4 +200,58 @@ footer {
 
 .btn-login:hover {
   filter: brightness(1.1);
+}
+
+/* HEADER MOBILE */
+@media (max-width: 768px) {
+  .header-container {
+    padding: 0 1rem;
+    height: 60px;
+  }
+
+  .logo-link {
+    font-size: 1.25rem;
+  }
+
+  .header-actions {
+    gap: 8px;
+  }
+
+  .search-wrapper {
+    width: 40px;
+    padding: 0 10px;
+    justify-content: center;
+  }
+
+  .search-wrapper input {
+    width: 0;
+    padding: 0;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .search-wrapper.active {
+    width: 170px;
+  }
+
+  .search-wrapper.active input {
+    width: 115px;
+    opacity: 1;
+    padding: 0 4px;
+    pointer-events: auto;
+  }
+
+  .btn-login {
+    padding: 8px 16px;
+  }
+}
+
+@media (max-width: 400px) {
+  .search-wrapper.active {
+    width: 130px;
+  }
+
+  .search-wrapper.active input {
+    width: 80px;
+  }
 }

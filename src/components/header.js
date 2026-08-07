@@ -29,7 +29,8 @@ export default function Header() {
 
             <div className="header-actions">
                 <div className={`search-wrapper ${isSearchFocused ? 'active' : ''}`}>
-                    <form onSubmit={handleSearch}>
+                    {isLoggedIn ? (
+                        <form onSubmit={handleSearch}>
                         <button type="submit" className="search-icon-btn">
                             search
                         </button>
@@ -43,7 +44,8 @@ export default function Header() {
                             onFocus={() => setSearchFocused(true)}
                             onBlur={() => setSearchFocused(false)}
                         />
-                    </form>
+                    </form>) : (<></>)}
+                
                 </div>
 
                 {isLoggedIn ? (

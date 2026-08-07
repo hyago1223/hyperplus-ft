@@ -3,7 +3,6 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { useRouter } from "next/navigation";
 import { envs as env } from '@/lib/env/index.js';
-import { UFetch } from '@/service/fetch';
 
 const AuthContext = createContext(null);
 
@@ -48,8 +47,13 @@ export function AuthProvider({ children }) {
 
     async function login({ email, password, isContinueLogged }) {
         try {
-            const res = await UFetch({API_URL: env.serverApi,endPoint: env.routes.login,options: { method: "POST", body: { email, password, isContinueLogged},},});
-            const data = await res.json();
+            const res = await fetch(`${env.serverApi}${env.routes.login}`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                credentials: "include",
+                body: JSON.stringify({ email, password, isContinueLogged }),
+            });
+            const data = await res.json().catch(() => null);
 
             if (res.ok) {
                 setIsLoggedIn(true);
@@ -63,7 +67,7 @@ export function AuthProvider({ children }) {
 
             return {
                 success: false,
-                message: data.message || "Email ou senha inválidos.",
+                message: data?.message || "Email ou senha inválidos.",
             };
         } catch (err) {
             console.error("Erro ao logar:", err);
@@ -87,9 +91,25 @@ export function AuthProvider({ children }) {
         }
     }
 
+    async function tryRefreshToken() {
+        try {
+            const res = await fetch(`${env.serverApi}/user/refresh`, {
+                method: "POST",
+                credentials: "include",
+            });
+            if (!res.ok) {
+                throw new Error("Falha ao atualizar token");
+            }
+            return true;
+        } catch (err) {
+            console.error("Erro ao atualizar token:", err);
+            return false;
+        }
+    }
+
     async function isTokenValid() {
         try{
-            const res = fetch(`${env.serverApi}/user/auth`,{
+            const res = await fetch(`${env.serverApi}/user/auth`,{
                 method: "GET",
                 credentials: "include",
             });
@@ -117,6 +137,7 @@ export function AuthProvider({ children }) {
                 login,
                 logout,
                 isTokenValid,
+                tryRefreshToken,
             }}
         >
             {children}

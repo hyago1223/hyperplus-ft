@@ -3,57 +3,51 @@ import { envs as env } from "./lib/env";
 const apiUrl = env.serverApi || "http://localhost:3000";
 
 export async function proxy(req) {
-    console.log("Middleware ativou:", req.nextUrl.pathname);
     const token = req.cookies.get("token")?.value;
     const pathname = req.nextUrl.pathname;
 
     const publicRoutes = ["/login", "/signup", "/"];
     const restrictedRoutes = ["/admin"];
 
-    if (publicRoutes.includes(pathname) && token) {
-        return NextResponse.redirect(new URL("/home", req.url));
-    }
+    const tokenIsValid = token ? await testToken(token) : false;
 
-    if (publicRoutes.includes(pathname)) {
-        return NextResponse.next();
-    }
+    if (publicRoutes.includes(pathname) && tokenIsValid) return redirect("/home", req);
 
-    if(token && !(publicRoutes.includes(pathname))){
-         const res = await fetch(`${apiUrl}/user/auth`, {
-                method: "GET",
-                headers:{
-                    Cookie: `token=${token}`,
-                },
-                cache: 'no-store',
-            });
-        if(!res.ok)
-            await fetch(`${env.serverApi}/user/logout`, {method: 'POST',headers:{Cookie: `token=${token}`,},cache: 'no-store',});
-    }
+    if (publicRoutes.includes(pathname)) return NextResponse.next();
 
-    if (!token) {
-        return NextResponse.redirect(new URL("/login", req.url));
-    }
-
-    if (restrictedRoutes.includes(pathname)) {
-        try {
-            const res = await fetch(`${apiUrl}/admin/isAdmin`, {
-                method: "GET",
-                headers:{
-                    Cookie: `token=${token}`,
-                },
-                cache: 'no-store',
-            });
-
-            if (!res.ok) {
-                return NextResponse.redirect(new URL("/home", req.url));
-            }
-        } catch (err) {
-            console.error("Erro ao verificar admin:", err);
-            return NextResponse.redirect(new URL("/home", req.url));
-        }
-    }
+    if (!tokenIsValid) return redirect("/login", req);
+    
+    if (restrictedRoutes.includes(pathname) && !(await testToken(token, { isAdminCheck: true }))) return redirect("/home", req);
 
     return NextResponse.next();
+}
+
+async function testToken(token, { isAdminCheck = false } = {}) {
+    const endpoint = isAdminCheck ? "/admin/isAdmin" : "/user/auth";
+    if (!token) return false;
+    const res = await fetch(`${apiUrl}${endpoint}`, {
+        method: "POST",
+        headers: {
+            Cookie: `token=${token}`,
+        },
+        cache: 'no-store',
+    });
+    if(!res.ok) {
+        await fetch(`${apiUrl}/user/logout`, {
+            method: "POST",
+            headers: {
+                Cookie: `token=${token}`,
+            },
+            cache: 'no-store',
+        });
+    }
+    const isValid = res.ok || false;
+    return isValid;
+}
+
+
+async function redirect(URLs, req) {
+    return NextResponse.redirect(new URL(URLs, req.url));
 }
 
 export const config = {

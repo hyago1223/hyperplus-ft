@@ -1,4 +1,4 @@
-import menu from "@/components/menu.js";
+import { envs as env } from "@/lib/env/index.js";
 import { useEffect, useState } from "react";
 import styles from './style.module.css';
 import { useRouter } from "next/navigation";
@@ -8,13 +8,13 @@ export default function Hero() {
 
     async function loadHero(){
         try{
-            const res = await fetch(`${menu.Server_api}/serie/home/hero`);
+            const res = await fetch(`${env.serverApi}/serie/home/hero`);
             if(!res.ok) throw new Error("Erro ao busca Hero");
             const responseJson = await res.json();
             if (responseJson.success && responseJson.data && responseJson.data.length > 0) {
                 const serieData = responseJson.data[0];
                     if(serieData.url_image){
-                        serieData.url_image = `${menu.Server_api}/serie/image/${data.id}`;
+                        serieData.url_image = `${env.serverApi}/serie/image/${serieData.id}`;
                     }else{
                         serieData.url_image = '/img/placeholder.png';
                     }

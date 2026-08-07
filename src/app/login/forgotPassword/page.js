@@ -61,7 +61,7 @@ export default function ForgotPassword() {
     }, [messageType]);
 
     return (
-        <div className={styles.container}>
+        <main className={styles.container}>
             <div className={styles.card}>
                 <h1 className={styles.title}>Recuperar Senha</h1>
                 <p className={styles.subtitle}>
@@ -111,6 +111,6 @@ export default function ForgotPassword() {
                     </Link>
                 </div>
             </div>
-        </div>
+        </main>
     );
 }

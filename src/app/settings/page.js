@@ -4,6 +4,7 @@ import { envs as env } from "@/lib/env";
 import styles from "./styles.module.css";
 import { ThemeSwitcher } from "@/components/css/ThemeSwitch.js";
 import { useAuth } from "@/components/auth/AuthContext";
+import ImageCropModal from "./ImageCropModal.js";
 
 const object = {
     passwordChange: {
@@ -23,6 +24,8 @@ export default function Settings() {
     const [userImage, setUserImage] = useState(env.images.defaultUser);
     const [loading, setLoading] = useState(true);
     const [name, setName] = useState("");
+    const [cropImageSrc, setCropImageSrc] = useState(null);
+    const [showCropModal, setShowCropModal] = useState(false);
     const [passwordData, setPasswordData] = useState(object.passwordChange);
     const [message, setMessage] = useState(object.message);
 
@@ -75,16 +78,25 @@ export default function Settings() {
 
     const handleFileChange = async (e) => {
         const file = e.target.files?.[0];
-
         if (!file || !user?.id) return;
 
+        setCropImageSrc(URL.createObjectURL(file));
+        setShowCropModal(true);
+
+         e.target.value = "";
+    };
+
+    const handleCropConfirm = async (blob) => {
+        if (!blob) return;
+        setShowCropModal(false);
+
+        const previewUrl = URL.createObjectURL(blob);
+        setUserImage(previewUrl);
+
         const formData = new FormData();
-        formData.append("UserPhoto", file);
+        formData.append("UserPhoto", blob, "profile.png");
 
         try {
-            const previewUrl = URL.createObjectURL(file);
-            setUserImage(previewUrl);
-
             const res = await fetch(`${env.serverApi}/user/upload/photo/${user.id}`, {
                 method: "POST",
                 credentials: "include",
@@ -106,7 +118,14 @@ export default function Settings() {
                 type: "error",
                 text: "Erro ao enviar imagem.",
             });
+        } finally {
+            setCropImageSrc(null);
         }
+    };
+
+    const handleCropCancel = () => {
+        setShowCropModal(false);
+        setCropImageSrc(null);
     };
 
     const handleLogout = async (e) => {
@@ -225,6 +244,13 @@ export default function Settings() {
                         accept="image/*"
                         className={styles.hiddenInput}
                     />
+                    {showCropModal && cropImageSrc && (
+                        <ImageCropModal
+                            imageSrc={cropImageSrc}
+                            onConfirm={handleCropConfirm}
+                            onCancel={handleCropCancel}
+                        />
+                    )}
 
                     <div
                         className={styles.avatarWrapper}

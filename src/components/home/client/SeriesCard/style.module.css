@@ -37,3 +37,32 @@
 .card:hover .overlay {
     display: flex;
 }
+
+@media (max-width: 768px) {
+    .card {
+        min-width: 140px;
+    }
+
+    .rowPoster {
+        max-height: 84px;
+    }
+
+    .rowPosterLarge {
+        max-height: 190px;
+    }
+}
+
+@media (max-width: 480px) {
+    .card {
+        min-width: 118px;
+    }
+
+    .rowPoster {
+        max-height: 70px;
+        margin-right: 6px;
+    }
+
+    .rowPosterLarge {
+        max-height: 160px;
+    }
+}

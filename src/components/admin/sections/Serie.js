@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { envs as env } from "@/lib/env";
-import { searchSeries, deleteSeries, uploadSerieImage, setSeriesAsHero, loadEpisodesBySerieId } from "@/service/fetch";
+import { searchSeries, deleteSeries, uploadSerieImage, setSeriesAsHero, createSerie } from "@/service/fetch";
 import styles from '@/components/css/admin/styles.module.css';
 
 const FormDataSerie = {
@@ -107,6 +106,35 @@ export default function Serie() {
         />
         <button type='submit' disabled={loading} className={styles.submitButton}>
           {loading ? 'Buscando...' : 'Pesquisar'}
+        </button>
+      </form>
+
+      <form onSubmit={createSerie} className={styles.createForm}>
+        <input 
+          type='text'
+          value={FormDataSerie.title}
+          placeholder='Título da série'
+          onChange={(e) => setFormDataSerie({ ...FormDataSerie, title: e.target.value })}
+          className={styles.createInput}
+        />
+        <input 
+          type='text'
+          value={FormDataSerie.description}
+          placeholder='Descrição da série'
+          onChange={(e) => setFormDataSerie({ ...FormDataSerie, description: e.target.value })}
+          className={styles.createInput}
+        />
+        <select
+          value={FormDataSerie.access_type}
+          onChange={(e) => setFormDataSerie({ ...FormDataSerie, access_type: e.target.value })}
+          className={styles.createSelect}
+        >
+          <option value="">Tipo de acesso</option>
+          <option value="free">Gratuito</option>
+          <option value="premium">Premium</option>
+        </select>
+        <button type='submit' disabled={loading} className={styles.submitButton}>
+          {loading ? 'Criando...' : 'Criar Série'}
         </button>
       </form>
 

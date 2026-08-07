@@ -59,7 +59,7 @@ export default function Home() {
     }, []);
 
     return (
-        <div className="Home-Container">
+        <main className="Home-Container">
             <Hero />
             <div className="rows-container">
                 {isLoggedIn && (
@@ -119,6 +119,6 @@ export default function Home() {
                     />
                 ))}
             </div>
-        </div>
+        </main>
     );
 }

@@ -40,5 +40,6 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# public arquives
-/public 
+#skill
+./my-skill
+skill.md
