@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import Hls from "hls.js";
 import VideoControler from "./VideoController";
-import menu from "@/components/menu";
+import { envs as env } from "@/lib/env/index.js";
 import styles from "./styles.module.css";
 
 export default function VideoPlayer({ videoData }) {
@@ -15,7 +15,7 @@ export default function VideoPlayer({ videoData }) {
     if (!videoRef.current || !videoData?.video_url) return;
 
     const videoElement = videoRef.current;
-    const videoUrl = `${menu.Server_api}${videoData.video_url}`;
+    const videoUrl = `${env.serverApi}${videoData.video_url}`;
     let hls;
 
     if (videoElement.canPlayType("application/vnd.apple.mpegurl")) {

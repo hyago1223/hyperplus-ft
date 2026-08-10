@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from "react";
-import menu from "../../components/menu";
+import { envs as env } from "@/lib/env/index.js";
 import style from "./style.module.css";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/auth/AuthContext";
@@ -15,7 +15,7 @@ export default function Signup() {
     useEffect(() => {
         async function loadPlans() {
             try {
-                const res = await fetch(`${menu.Server_api}/plan`);
+                const res = await fetch(`${env.serverApi}/plan`);
                 const json = await res.json();
                 setPlansData(json.data);
             } catch (err) {
@@ -35,14 +35,14 @@ export default function Signup() {
             birthdate: formData.get("birthdate"),
         };
 
-        const res = await fetch(`${menu.Server_api}/user/register`, {
+        const res = await fetch(`${env.serverApi}/user/register`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(userData),
         });
 
         if (res.ok) {
-            await login(userData.email, userData.password);
+            await login({ email: userData.email, password: userData.password, isContinueLogged: true });
             router.refresh();
         } else {
             alert("Erro ao registrar");

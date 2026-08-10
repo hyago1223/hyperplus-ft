@@ -145,7 +145,7 @@ export const uploadSerieImage = (serieId, file) =>
     uploadFile(replaceRouteParams(env.api.admin.uploadSerieImage, { serieId }), 'SerieImage', file);
 
 export const createSerie = (serieData) => 
-    crudOperation(`${env.api.admin.serie}/admin/serie`, "POST", serieData);
+    crudOperation(env.api.admin.serie, "POST", serieData);
 
 // ============ ADMIN - EPISODE FUNCTIONS ============
 

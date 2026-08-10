@@ -25,24 +25,29 @@ export async function proxy(req) {
 async function testToken(token, { isAdminCheck = false } = {}) {
     const endpoint = isAdminCheck ? "/admin/isAdmin" : "/user/auth";
     if (!token) return false;
-    const res = await fetch(`${apiUrl}${endpoint}`, {
-        method: "POST",
-        headers: {
-            Cookie: `token=${token}`,
-        },
-        cache: 'no-store',
-    });
-    if(!res.ok) {
-        await fetch(`${apiUrl}/user/logout`, {
+    try {
+        const res = await fetch(`${apiUrl}${endpoint}`, {
             method: "POST",
             headers: {
                 Cookie: `token=${token}`,
             },
             cache: 'no-store',
         });
+        if(!res.ok) {
+            await fetch(`${apiUrl}/user/logout`, {
+                method: "POST",
+                headers: {
+                    Cookie: `token=${token}`,
+                },
+                cache: 'no-store',
+            });
+        }
+        const isValid = res.ok || false;
+        return isValid;
+    }catch (err) {
+        console.error("Erro ao autenticar token:", err);
+        return false;
     }
-    const isValid = res.ok || false;
-    return isValid;
 }
 
 

@@ -4,6 +4,7 @@ import {envs as env} from '../../../lib/env/index.js'
 
 export default function RightButtons({ videoRef, playerRef }){
     const [nextEpisode, setNextEpisode] = useState(null);
+    const [episodeId, setEpisodeId] = useState(videoRef.current.src ? videoRef.current.src.split('/').slice(-2, -1)[0] : null);
     const [configOpen, setConfigOpen] = useState(false);
 
     const searchNextEpisode = async (episodeId) => {
@@ -48,11 +49,9 @@ export default function RightButtons({ videoRef, playerRef }){
 
     useEffect(() => {
         if (videoRef.current && videoRef.current.src) {
-            const urlParts = videoRef.current.src.split('/');
-            const episodeId = urlParts[urlParts.length - 2];
             searchNextEpisode(episodeId);
         }   
-    }, [videoRef.current?.src]);
+    }, [episodeId, videoRef.current?.src]);
     return (
         <>
             {nextEpisode && (

@@ -38,30 +38,31 @@ export default function ResultSearch() {
     const [results, setResults] = useState([]);
     const [loading, setLoading] = useState(false);
 
-    async function handlerSearch() {
-        if (!query) return;
-        setLoading(true);
-        try {
-            const res = await fetch(`${env.serverApi}/search?query=${encodeURIComponent(query)}`, {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                }
-            });
-            if (!res.ok) throw new Error("Erro na requisição");
-            const data = await res.json();
-            const list = Array.isArray(data) ? data : (data.data || []);
-            setResults(list);
-        } catch (err) {
-            console.error("Erro ao buscar series", err);
-            setResults([]);
-        } finally {
-            setLoading(false);
-        }
-    }
-
     useEffect(() => {
+        let ignore = false;
+        async function handlerSearch() {
+            if (!query) return;
+            try {
+                const res = await fetch(`${env.serverApi}/search?query=${encodeURIComponent(query)}`, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                    }
+                });
+                if (!res.ok) throw new Error("Erro na requisição");
+                const data = await res.json();
+                const list = Array.isArray(data) ? data : (data.data || []);
+                if (!ignore) setResults(list);
+            } catch (err) {
+                console.error("Erro ao buscar series", err);
+                if (!ignore) setResults([]);
+            } finally {
+                if (!ignore) setLoading(false);
+            }
+        }
+
         handlerSearch();
+        return () => { ignore = true; };
     }, [query]);
 
     return (

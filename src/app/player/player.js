@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { envs as env } from "@/lib/env";
 import styles from './styles.module.css';
@@ -14,54 +14,50 @@ export default function PlayerPage() {
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    const loadPlayerData = useCallback(async () => {
-        if (!source || !id) {
-            setError("Parâmetros inválidos");
-            setLoading(false);
-            return;
-        }
+    useEffect(() => {
+        if (!source || !id) return;
 
-        setLoading(true);
-        setError(null);
+        let ignore = false;
+        async function loadPlayerData() {
+            try {
+                if (source === 'serie') {
+                    let res = await fetch(`${env.serverApi}/user/historico/lastEpisode?serieId=${id}`,{credentials: "include"});
 
-        try {
-            if (source === 'serie') {
-                let res = await fetch(`${env.serverApi}/user/historico/lastepisode?serieId=${id}`,{credentials: "include"});
+                    if(res.status === 404){
+                        res = await fetch(`${env.serverApi}/serie/${id}/episodes?number=1`);
 
-                if(res.status === 404){
-                    res = await fetch(`${env.serverApi}/serie/${id}/episodes?number=1`);
-
-                    if(!res.ok){
+                        if(!res.ok){
+                            throw new Error("Error ao busca episodio Serie");
+                        }
+                    } else if (!res.ok) {
                         throw new Error("Error ao busca episodio Serie");
                     }
-                } else if (!res.ok) {
-                    throw new Error("Error ao busca episodio Serie");
+
+                    const data = await res.json();
+                    if (!ignore) setVideoData(data);
                 }
 
-                const data = await res.json();
-                setVideoData(data);
+                if (source === 'episode') {
+                    const res = await fetch(`${env.serverApi}/serie/episodes/${id}`);
+
+                    if (!res.ok) throw new Error("Erro ao carregar episódio");
+
+                    const data = await res.json();
+                    if (!ignore) setVideoData(data);
+                }
+            } catch (err) {
+                console.error(err);
+                if (!ignore) setError("Erro ao carregar o player");
+            } finally {
+                if (!ignore) setLoading(false);
             }
-
-            if (source === 'episode') {
-                const res = await fetch(`${env.serverApi}/serie/episodes/${id}`);
-
-                if (!res.ok) throw new Error("Erro ao carregar episódio");
-
-                const data = await res.json();
-                setVideoData(data);
-            }
-        } catch (err) {
-            console.error(err);
-            setError("Erro ao carregar o player");
-        } finally {
-            setLoading(false);
         }
-    }, [source, id]);
 
-    useEffect(() => {
         loadPlayerData();
+        return () => { ignore = true; };
     }, [source, id]);
 
+    if (!source || !id) return <div className={styles.errorContainer}>Parâmetros inválidos</div>;
     if (loading) return <div className={styles.loading}>Carregando player...</div>;
     if (error) return <div className={styles.errorContainer}>{error}</div>;
 

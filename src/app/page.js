@@ -10,34 +10,37 @@ export default function Home() {
   const [series, setSeries] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  async function PickImageSeries() {
-    try {
-      setIsLoading(true);
-      const res = await fetch(`${env.serverApi}/serie/top10`);
-
-      if (!res.ok) {
-        throw new Error(`Erro ao buscar Top 10 séries: Status ${res.status}`);
-      }
-
-      const response = await res.json();
-      const data = Array.isArray(response.data) ? response.data : [];
-
-      const serieComImagens = data.map((serie) => ({
-        ...serie,
-        url_image: `${env.serverApi}/serie/image/${serie.id}`,
-      }));
-
-      setSeries(serieComImagens);
-    } catch (err) {
-      console.error("Erro ao buscar as séries Top 10:", err);
-      setSeries([]);
-    } finally {
-      setIsLoading(false);
-    }
-  }
-
   useEffect(() => {
-    void PickImageSeries();
+    let ignore = false;
+    async function PickImageSeries() {
+      try {
+        const res = await fetch(`${env.serverApi}/serie/top10`);
+
+        if (!res.ok) {
+          throw new Error(`Erro ao buscar Top 10 séries: Status ${res.status}`);
+        }
+
+        const response = await res.json();
+        const data = Array.isArray(response.data) ? response.data : [];
+
+        const serieComImagens = data.map((serie) => ({
+          ...serie,
+          url_image: `${env.serverApi}/serie/image/${serie.id}`,
+        }));
+
+        if (!ignore) setSeries(serieComImagens);
+      } catch (err) {
+        console.error("Erro ao buscar as séries Top 10:", err);
+        if (!ignore) setSeries([]);
+      } finally {
+        if (!ignore) setIsLoading(false);
+      }
+    }
+
+    PickImageSeries();
+    return () => {
+      ignore = true;
+    };
   }, []);
 
   function handleImageError(event) {

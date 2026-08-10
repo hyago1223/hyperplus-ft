@@ -31,50 +31,54 @@ export default function Settings() {
 
     const fileInputRef = useRef(null);
 
-    async function loadUserData() {
-        try {
-            setLoading(true);
-
-            const res = await fetch(`${env.serverApi}/user/config`, {
-                method: "GET",
-                credentials: "include",
-            });
-
-            if (!res.ok) {
-                setMessage({
-                    type: "error",
-                    text: "Você precisa estar logado para acessar essa página.",
+    useEffect(() => {
+        let ignore = false;
+        async function loadUserData() {
+            try {
+                const res = await fetch(`${env.serverApi}/user/config`, {
+                    method: "GET",
+                    credentials: "include",
                 });
-                return;
+
+                if (!res.ok) {
+                    if (!ignore) setMessage({
+                        type: "error",
+                        text: "Você precisa estar logado para acessar essa página.",
+                    });
+                    return;
+                }
+
+                const data = await res.json();
+
+                if (!ignore) setUser(data.data);
+                if (!ignore) setName(data.data?.name || "");
+
+                const resImage = await fetch(`${env.serverApi}/user/image`, {
+                    method: "GET",
+                    credentials: "include",
+                });
+
+                if (resImage.ok) {
+                    const blob = await resImage.blob();
+                    const imageUrl = URL.createObjectURL(blob);
+                    if (!ignore) setUserImage(imageUrl);
+                } else {
+                    if (!ignore) setUserImage("/img/default.jpg");
+                }
+            } catch (error) {
+                console.error("Erro ao carregar perfil:", error);
+                if (!ignore) setMessage({
+                    type: "error",
+                    text: "Erro de conexão com o servidor.",
+                });
+            } finally {
+                if (!ignore) setLoading(false);
             }
-
-            const data = await res.json();
-
-            setUser(data.data);
-            setName(data.data?.name || "");
-
-            const resImage = await fetch(`${env.serverApi}/user/image`, {
-                method: "GET",
-                credentials: "include",
-            });
-
-            if (resImage.ok) {
-                const blob = await resImage.blob();
-                const imageUrl = URL.createObjectURL(blob);
-                setUserImage(imageUrl);
-            } else {
-                setUserImage("/img/default.jpg");
-            }
-        } catch (error) {
-            console.error("Erro ao carregar perfil:", error);
-            setMessage({
-                type: "error",
-                text: "Erro de conexão com o servidor.",
-            });
-        } finally {
-            setLoading(false);
         }
-    }
+
+        loadUserData();
+        return () => { ignore = true; };
+    }, []);
 
     const handleFileChange = async (e) => {
         const file = e.target.files?.[0];
@@ -216,10 +220,6 @@ export default function Settings() {
             });
         }
     };
-
-    useEffect(() => {
-        loadUserData();
-    }, []);
 
     if (loading) {
         return <div className={styles.container}>Carregando perfil...</div>;

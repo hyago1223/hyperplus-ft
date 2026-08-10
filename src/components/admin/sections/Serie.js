@@ -14,6 +14,7 @@ export default function Serie() {
   const [windows, setWindows] = useState("");
   const [name, setname] = useState("");
   const [loading, setLoading] = useState(false);
+  const [FormDataSerie, setFormDataSerie] = useState(FormDataSerie);
 
   const handleSearchSeries = async (e) => {
     e.preventDefault();

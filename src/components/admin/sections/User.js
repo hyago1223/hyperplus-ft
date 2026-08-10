@@ -1,6 +1,7 @@
 import { useState } from "react";
 import styles  from '@/components/css/admin/styles.module.css'
 import { envs as env } from "@/lib/env";
+import { UFetch } from "@/service/fetch";
 
 const FormDataUser = {
   id: "", 
@@ -15,9 +16,11 @@ export default function User() {
   const [loading, setLoading] = useState(false);
   const [showTableSelect, setShowTableSelect] = useState(false);
   const [editUser, setEditUser] = useState(false);
+  const [waningBan, setWaningBan] = useState(false);
   const [dataUser, setDataUser] = useState(FormDataUser);
 
-  const checkUser = async () => {
+  const checkUser = async (e) => {
+    e.preventDefault();
     setLoading(true);
     try {
       const data = await UFetch({ API_URL: env.serverApi,endPoint: "/user",type: "json"});
@@ -35,10 +38,39 @@ export default function User() {
 
   const HandlerEditUser = async (event) => {
     event.preventDefault();
+    try{
+      const res = await fetch(`${env.serverApi}/user/${dataUser.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(dataUser),
+      });
+      if (!res.ok) {
+        throw new Error("Erro ao editar usuário");
+      }
+    }catch(err){
+      console.error("Erro ao editar usuário", err);
+    }
   }
 
   const HandlerBanUser = async (event) =>{
     event.preventDefault();
+    try{
+      const res = await fetch(`${env.serverApi}/user/${dataUser.id}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (!res.ok) {
+        throw new Error("Erro ao banir usuário");
+      } else {
+        setUsers(users.filter(user => user.id !== dataUser.id));
+      }
+    }catch(err){
+      console.error("Erro ao banir usuário", err);
+    }
   }
 
   return(
@@ -77,8 +109,29 @@ export default function User() {
         </div>
       )}
       <div hidden={!showTableSelect}> 
-        <button>Editar Usuario</button>
-        <button>Banir Usuario</button>
+        <button onClick={() => setEditUser(!editUser)}>Editar Usuario</button>
+        <button onClick={() => setWaningBan(!waningBan)}>Banir Usuario</button>
+      </div>
+      <div hidden={!editUser}>
+        <h4>Editar Usuario</h4>
+        <form onSubmit={HandlerEditUser}>
+          <input type="text" placeholder="Nome" value={dataUser.name} onChange={(e) => setDataUser({ ...dataUser, name: e.target.value })} />
+          <input type="email" placeholder="Email" value={dataUser.email} onChange={(e) => setDataUser({ ...dataUser, email: e.target.value })} />
+          <input type="date" placeholder="Data de Nascimento" value={dataUser.birthdate} onChange={(e) => setDataUser({ ...dataUser, birthdate: e.target.value })} />
+          <select value={dataUser.role} onChange={(e) => setDataUser({ ...dataUser, role: e.target.value })}>
+            <option value="">Selecione o papel</option>
+            <option value="user">Usuário</option>
+            <option value="admin">Administrador</option>
+          </select>
+          <button type="submit">Salvar Alterações</button>
+        </form>
+      </div>
+      <div hidden={!waningBan}>
+        <h4>Banir Usuario</h4>
+        <form onSubmit={HandlerBanUser}>
+          <p>Tem certeza que deseja banir o usuário {dataUser.name}?</p>
+          <button type="submit">Confirmar Banimento</button>
+        </form>
       </div>
     </div>
   );

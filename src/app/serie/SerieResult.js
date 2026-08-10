@@ -22,7 +22,6 @@ function SeriesButtons({ serieId }) {
             const res = await UFetch({API_URL: env.serverApi,endPoint: `/user/like/${serieId}`,type: "json",options: {method: "PUT",},});
 
             if (res.success) {
-                console.log(res.message || "Série curtida!");
                 setLike(res.status);
             } else {
                 console.log("Erro ao curtir a série.");
@@ -38,13 +37,21 @@ function SeriesButtons({ serieId }) {
 
     useEffect(() =>{
         async function loadlike() {
-            const data = await UFetch({API_URL: env.serverApi,endPoint: `/user/like/${serieId}`,type:"json", options: { method: "GET",},});
-            if(data.success){
-                setLike(data.status);
+            try {
+                if (!isLoggedIn) {
+                    setLike(false);
+                    return;
+                }
+                const data = await UFetch({API_URL: env.serverApi,endPoint: `/user/like/${serieId}`,type:"json", options: { method: "GET",},});
+                if(data.success){
+                    setLike(data.status);
+                }
+            } catch (err) {
+                console.log("Erro de Rede:", err);
             }
         }
         loadlike();
-    },[])
+    },[serieId, isLoggedIn]);
 
     return (
         <div className={style.buttonsContainer}>
@@ -70,78 +77,73 @@ export default function Serie() {
     const [episode, setEpisode] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [serieId, setSerieId] = useState(id);
 
     const HandlerWatchSubmit = (episodeId) => {
         router.push(`/player?source=episode&id=${episodeId}`);
     };
 
-    async function GetDataSerie(serieId) {
-        if (!serieId) return;
-
-        try {
-            const res = await fetch(`${env.serverApi}/serie/${serieId}`, {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            });
-
-            if (!res.ok) {
-                throw new Error(`Erro HTTP: ${res.status}`);
-            }
-
-            const data = await res.json();
-            setSerie(data.data);
-        } catch (err) {
-            setError(err.message);
-        }
-    }
-
-    async function GetDataEpisodes(serieId) {
-        if (!serieId) return;
-
-        try {
-            const res = await fetch(`${env.serverApi}/serie/${serieId}/episodes`, {
-                method: "GET",
-            });
-
-            if (!res.ok) {
-                throw new Error(`Erro ao buscar episódios: ${res.status}`);
-            }
-
-            const data = await res.json();
-            setEpisode(data.data || []);
-        } catch (err) {
-            console.log(err);
-            setError(err.message);
-        }
-    }
-
-    async function getBlobSerieCard(serieId) {
-        if(!serieId) return;
-
-        try{
-            const resquest = await BFetch(serieId,"image");
-            setSeriePhoto(resquest)
-        }catch(err){
-            return;
-        }
-    }
-
     useEffect(() => {
-        if (!id) return;
+        if (!serieId) return;
 
-        setLoading(true);
-        setError(null);
+        let ignore = false;
+
+        async function GetDataSerie(id) {
+            try {
+                const res = await fetch(`${env.serverApi}/serie/${id}`, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                });
+
+                if (!res.ok) {
+                    throw new Error(`Erro HTTP: ${res.status}`);
+                }
+
+                const data = await res.json();
+                if (!ignore) setSerie(data.data);
+            } catch (err) {
+                if (!ignore) setError(err.message);
+            }
+        }
+
+        async function GetDataEpisodes(id) {
+            try {
+                const res = await fetch(`${env.serverApi}/serie/${id}/episodes`, {
+                    method: "GET",
+                });
+
+                if (!res.ok) {
+                    throw new Error(`Erro ao buscar episódios: ${res.status}`);
+                }
+
+                const data = await res.json();
+                if (!ignore) setEpisode(data.data || []);
+            } catch (err) {
+                if (!ignore) setError(err.message);
+            }
+        }
+
+        async function getBlobSerieCard(id) {
+            try {
+                const resquest = await BFetch(id, "image");
+                if (!ignore) setSeriePhoto(resquest);
+            } catch (err) {
+                return;
+            }
+        }
 
         Promise.all([
-            GetDataSerie(id),
-            GetDataEpisodes(id),
-            getBlobSerieCard(id),
+            GetDataSerie(serieId),
+            GetDataEpisodes(serieId),
+            getBlobSerieCard(serieId),
         ]).finally(() => {
-            setLoading(false);
+            if (!ignore) setLoading(false);
         });
-    }, [id]);
+
+        return () => { ignore = true; };
+    }, [serieId]);
 
     if (loading) {
         return (
@@ -185,7 +187,7 @@ export default function Serie() {
                     <h3 className={style.serieGenre}>{serie.genre}</h3>
                     <h3 className={style.serieYear}>{serie.year}</h3>
 
-                    {(<SeriesButtons serieId={id} />)}
+                    {(<SeriesButtons serieId={serieId} />)}
 
                     <p className={style.serieDescription}>
                         {serie.description}

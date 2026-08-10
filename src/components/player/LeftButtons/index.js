@@ -11,8 +11,8 @@ const formatTime = (sec) =>{
 export default function LeftButtons( { videoRef } ){
     const [isPaused, setIsPaused] = useState(false);
     const [isMuted, setIsMuted] = useState(false);
-    const [time, setTime] = useState(0);
     const [isDraggingVolume, setIsDraggingVolume] = useState(false);
+    
     
     const HandlerPausePlay = () =>{
         if(videoRef.current && videoRef.current.paused){

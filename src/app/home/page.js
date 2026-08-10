@@ -19,20 +19,25 @@ export default function Home() {
 
     const handlerLike = async (serie) => {
         const idSerie = serie.id;
-        const res = await fetch(`${env.serverApi}/like/${idSerie}`, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            credentials: "include",
-        });
+        try{
+            const res = await fetch(`${env.api.user.like}/${idSerie}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                credentials: "include",
+            });
 
-        if (!res.ok) {
+            if (!res.ok) {
+                return false;
+            }
+
+            const data = await res.json();
+            return data;
+        } catch (error) {
+            console.error("Erro ao curtir a série:", error);
             return false;
         }
-
-        const data = await res.json();
-        return data;
     };
 
     const handlerWatch = (serie) => {

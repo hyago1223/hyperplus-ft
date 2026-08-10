@@ -4,6 +4,19 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { useRouter } from "next/navigation";
 import { envs as env } from '@/lib/env/index.js';
 
+async function fetchUserImageUrl() {
+    const res = await fetch(`${env.serverApi}/user/image`, {
+        method: 'GET',
+        credentials: 'include',
+    });
+
+    if (res.status === 204) return null;
+    if (!res.ok) return undefined;
+
+    const blob = await res.blob();
+    return URL.createObjectURL(blob);
+}
+
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
@@ -15,25 +28,18 @@ export function AuthProvider({ children }) {
 
     async function loadUser() {
         try {
-            setLoading(true);
+            const url = await fetchUserImageUrl();
 
-            const res = await fetch(`${env.serverApi}/user/image`, {
-                method: 'GET',
-                credentials: 'include',
-            });
-
-            if (res.status === 204) {
+            if (url === null) {
+                setIsLoggedIn(false);
                 setImageUser('/img/default.jpg');
                 return;
             }
 
-            if (!res.ok) {
+            if (url === undefined) {
                 console.error('Erro ao buscar foto');
                 return;
             }
-
-            const blob = await res.blob();
-            const url = URL.createObjectURL(blob);
 
             setIsLoggedIn(true);
             setImageUser(url);
@@ -91,26 +97,10 @@ export function AuthProvider({ children }) {
         }
     }
 
-    async function tryRefreshToken() {
-        try {
-            const res = await fetch(`${env.serverApi}/user/refresh`, {
-                method: "POST",
-                credentials: "include",
-            });
-            if (!res.ok) {
-                throw new Error("Falha ao atualizar token");
-            }
-            return true;
-        } catch (err) {
-            console.error("Erro ao atualizar token:", err);
-            return false;
-        }
-    }
-
     async function isTokenValid() {
         try{
             const res = await fetch(`${env.serverApi}/user/auth`,{
-                method: "GET",
+                method: "POST",
                 credentials: "include",
             });
 
@@ -122,9 +112,33 @@ export function AuthProvider({ children }) {
         }
     }
 
-
     useEffect(() => {
-        loadUser();
+        let ignore = false;
+        async function loadInitialUser() {
+            try {
+                const url = await fetchUserImageUrl();
+
+                if (ignore || url === null || url === undefined) {
+                    if (url === null) {
+                        setIsLoggedIn(false);
+                        setImageUser('/img/default.jpg');
+                    }
+                    return;
+                }
+
+                setIsLoggedIn(true);
+                setImageUser(url);
+            } catch (err) {
+                if (ignore) return;
+                setIsLoggedIn(false);
+                setImageUser('/img/default.jpg');
+            } finally {
+                if (!ignore) setLoading(false);
+            }
+        }
+
+        loadInitialUser();
+        return () => { ignore = true; };
     }, []);
 
     return (
@@ -136,8 +150,7 @@ export function AuthProvider({ children }) {
                 loadUser,
                 login,
                 logout,
-                isTokenValid,
-                tryRefreshToken,
+                isTokenValid
             }}
         >
             {children}

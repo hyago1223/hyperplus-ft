@@ -6,31 +6,32 @@ export default function Hero() {
     const [highlight, setHighlight] = useState(null);
     const router = useRouter();
 
-    async function loadHero(){
-        try{
-            const res = await fetch(`${env.serverApi}/serie/home/hero`);
-            if(!res.ok) throw new Error("Erro ao busca Hero");
-            const responseJson = await res.json();
-            if (responseJson.success && responseJson.data && responseJson.data.length > 0) {
-                const serieData = responseJson.data[0];
-                    if(serieData.url_image){
-                        serieData.url_image = `${env.serverApi}/serie/image/${serieData.id}`;
-                    }else{
-                        serieData.url_image = '/img/placeholder.png';
-                    }
-                    setHighlight(serieData);
-            }else{
-                setHighlight(null);
-            }
-            
-            
-        }catch(err){
-            console.error(err);
-        }
-    };
-
     useEffect(()=>{
-        loadHero()
+        let ignore = false;
+        async function loadHero(){
+            try{
+                const res = await fetch(`${env.serverApi}/serie/home/hero`);
+                if(!res.ok) throw new Error("Erro ao busca Hero");
+                const responseJson = await res.json();
+                if (responseJson.success && responseJson.data && responseJson.data.length > 0) {
+                    const serieData = responseJson.data[0];
+                        if(serieData.url_image){
+                            serieData.url_image = `${env.serverApi}/serie/image/${serieData.id}`;
+                        }else{
+                            serieData.url_image = '/img/placeholder.png';
+                        }
+                        if (!ignore) setHighlight(serieData);
+                }else{
+                    if (!ignore) setHighlight(null);
+                }
+                
+                
+            }catch(err){
+                console.error(err);
+            }
+        };
+        loadHero();
+        return () => { ignore = true; };
     },[]);
 
     if (!highlight) {

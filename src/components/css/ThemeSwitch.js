@@ -1,26 +1,19 @@
 "use client";
 import { useTheme } from "next-themes";
-import { useEffect, useState } from "react";
 import styles from '@/components/css/themeSwitch/styles.module.css'
 
 export function ThemeSwitcher() {
-  const { theme, setTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
+  const { resolvedTheme, setTheme } = useTheme();
 
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) {
+  if (!resolvedTheme) {
     return null;
   }
 
   return (
     <button className={styles.button}
-      onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+      onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
     >
-      {theme === 'dark' ? 'Modo Escuro' : 'Modo Claro'}
+      {resolvedTheme === 'dark' ? 'Modo Escuro' : 'Modo Claro'}
     </button>
   );
 }
